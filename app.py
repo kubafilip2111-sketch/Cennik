@@ -15,6 +15,9 @@ st.markdown("""
         }
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
+        /* Ukrycie dodatkowych elementów Streamlit na mobile */
+        [data-testid="stToolbar"] {visibility: hidden;}
+        .stDeployButton {display:none;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -24,12 +27,22 @@ calc_code = """
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #ffc200; --dark: #1a1a1a; --light: #f8f9fa; --shadow: 0 10px 40px rgba(0,0,0,0.08); }
 
-        body { font-family: 'Poppins', sans-serif; background: transparent; color: var(--dark); margin: 0; padding: 0; box-sizing: border-box; }
+        /* Reset i ustawienia bazowe */
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: transparent; 
+            color: var(--dark); 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden; /* Blokuje poziome przewijanie */
+            width: 100%;
+        }
 
         .container { 
             background: white; 
@@ -52,6 +65,7 @@ calc_code = """
             margin-bottom: 5px; 
             font-size: 42px; 
             line-height: 1.1; 
+            width: 100%;
         }
         h1 span { color: var(--primary); }
         
@@ -67,18 +81,27 @@ calc_code = """
         
         .subtitle { text-align: center; font-size: 15px; color: #444; margin-bottom: 25px; font-weight: 500; }
 
-        /* --- RESPONSYWNOŚĆ (POPRAWKA NA TELEFONY) --- */
+        /* --- FIX NA TELEFONY --- */
         @media (max-width: 600px) {
             .container {
-                padding: 25px 15px; /* Mniejsze marginesy wewn. na telefonie */
+                /* Zmniejszamy padding, żeby treść miała miejsce */
+                padding: 20px 10px; 
+                border-radius: 16px;
+                width: 100%;
             }
             h1 {
-                font-size: 28px; /* Mniejsza czcionka nagłówka */
-                margin-bottom: 10px;
+                /* Zmniejszamy czcionkę, żeby się mieściła w jednej linii lub ładnie łamała */
+                font-size: 26px; 
+                margin-bottom: 5px;
             }
             .cennik-label {
-                font-size: 12px;
-                margin-bottom: 25px;
+                font-size: 11px;
+                margin-bottom: 20px;
+                letter-spacing: 2px;
+            }
+            /* Zmniejszenie przycisków pakietów na bardzo wąskich ekranach */
+            .btn-preset {
+                padding: 10px 2px;
             }
         }
 
