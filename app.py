@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. Zmiana layoutu na wide (szeroki)
+# 1. Zmiana layoutu na wide (szeroki) - kluczowe dla mobile
 st.set_page_config(page_title="Kalkulator Born to Brand", layout="wide")
 
 # 2. Hack CSS dla Streamlit - usuwa grube marginesy aplikacji na telefonie
@@ -36,7 +36,7 @@ calc_code = """
         /* Container: max-width 600px dla PC, ale 100% dla mobilnych */
         .container { 
             background: white; 
-            padding: 20px 15px; /* Mniejszy padding wewnątrz */
+            padding: 20px 15px; 
             border-radius: 12px; 
             box-shadow: var(--shadow); 
             width: 100%; 
