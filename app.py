@@ -27,43 +27,76 @@ calc_code = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ffc200; --dark: #1a1a1a; --light: #f8f9fa; --shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        :root { --primary: #ffc200; --dark: #1a1a1a; --light: #f8f9fa; --shadow: 0 10px 40px rgba(0,0,0,0.08); }
 
         body { font-family: 'Poppins', sans-serif; background: transparent; color: var(--dark); margin: 0; padding: 0; box-sizing: border-box; }
 
         .container { 
             background: white; 
-            padding: 20px 15px; 
-            border-radius: 12px; 
+            /* ZWIĘKSZONA PRZESTRZEŃ WEWNĄTRZ */
+            padding: 40px 25px; 
+            /* MOCNIEJSZE ZAOKRĄGLENIE ROGÓW */
+            border-radius: 24px; 
             box-shadow: var(--shadow); 
             width: 100%; 
-            max-width: 600px; 
+            max-width: 650px; 
             margin: auto; 
             position: relative; 
             padding-bottom: 50px; 
         }
 
-        h1 { text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-size: 24px; line-height: 1.2; }
+        /* NAGŁÓWEK BORN TO BRAND - DUŻO WIĘKSZY */
+        h1 { 
+            text-align: center; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            margin-top: 0;
+            margin-bottom: 5px; 
+            font-size: 42px; /* Zwiększone z 24px */
+            line-height: 1.1; 
+        }
         h1 span { color: var(--primary); }
         
-        .cennik-label { text-align: center; font-size: 16px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; color: #333; letter-spacing: 1px;}
-        .subtitle { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; font-weight: 500; }
+        /* CENNIK USŁUG - DELIKATNIEJSZY I Z ODSTĘPEM */
+        .cennik-label { 
+            text-align: center; 
+            font-size: 14px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            margin-bottom: 35px; /* Więcej oddechu */
+            color: #888; 
+            letter-spacing: 3px;
+        }
+        
+        .subtitle { text-align: center; font-size: 15px; color: #444; margin-bottom: 25px; font-weight: 500; }
 
         .section-box { border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
         
-        summary { padding: 15px; background: #fff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; font-size: 14px; }
+        summary { padding: 18px; background: #fff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; font-size: 15px; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '+'; font-size: 20px; color: var(--primary); transition: 0.3s; }
+        
+        /* Obsługa otwierania */
         details[open] summary::after { transform: rotate(45deg); }
         details[open] summary { border-bottom: 1px solid #f0f0f0; background: #fafafa; }
+        
+        /* Animacja pojawiania się treści */
+        details[open] .content {
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .content { padding: 15px; background: #fff; }
+        .content { padding: 20px; background: #fff; }
 
         /* Pakiety Social Media */
-        .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         
         .btn-preset {
-            background: #fff; border: 2px solid #eee; padding: 12px 5px; border-radius: 10px;
+            background: #fff; border: 2px solid #eee; padding: 15px 5px; border-radius: 12px;
             cursor: pointer; transition: 0.3s; text-align: center; position: relative;
         }
         .btn-preset:hover { border-color: #ddd; background: #fafafa; }
@@ -77,84 +110,84 @@ calc_code = """
         .preset-list li:last-child { border-bottom: none; }
 
         /* Inputy */
-        label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 13px; }
+        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; }
         input[type="number"], select, input[type="text"], input[type="email"], textarea {
-            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; 
+            width: 100%; padding: 14px; border: 2px solid #eee; border-radius: 10px; 
             font-family: inherit; font-size: 14px; transition: 0.3s; box-sizing: border-box;
         }
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
         textarea { resize: vertical; min-height: 80px; }
 
         /* Checkboxy */
-        .checkbox-group { display: flex; flex-direction: column; gap: 5px; margin-top: 20px; background: #fffdf5; padding: 15px; border-radius: 10px; border: 1px solid #ffeeba; }
-        .checkbox-row { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; font-size: 13px; margin: 0; }
-        .checkbox-row input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
-        .checkbox-hint { font-size: 10px; color: #999; margin-left: 30px; margin-bottom: 8px; line-height: 1.2; }
+        .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-top: 25px; background: #fffdf5; padding: 20px; border-radius: 12px; border: 1px solid #ffeeba; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; font-size: 14px; margin: 0; }
+        .checkbox-row input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+        .checkbox-hint { font-size: 11px; color: #999; margin-left: 32px; margin-bottom: 5px; line-height: 1.2; }
 
-        .hint-text { font-size: 11px; color: #666; margin-top: 15px; font-style: italic; line-height: 1.4; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 3px solid var(--primary); }
+        .hint-text { font-size: 12px; color: #666; margin-top: 15px; font-style: italic; line-height: 1.5; background: #f9f9f9; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
 
-        /* Custom Hints (ukryte domyślnie) */
+        /* Custom Hints */
         .custom-hint-box {
             display: none;
-            font-size: 11px; color: #555; background: #fff3cd; 
-            padding: 10px; border-radius: 6px; margin-top: 10px; line-height: 1.4; border: 1px solid #ffeeba;
+            font-size: 12px; color: #555; background: #fff3cd; 
+            padding: 15px; border-radius: 8px; margin-top: 15px; line-height: 1.5; border: 1px solid #ffeeba;
         }
 
         /* Stylizacja listy dodanych elementów */
-        .added-items-list { margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+        .added-items-list { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
         .added-item { 
             display: flex; justify-content: space-between; align-items: center; 
-            background: #f8f9fa; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-size: 13px;
+            background: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 13px;
         }
-        .added-item .remove-btn { color: red; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 16px; }
+        .added-item .remove-btn { color: red; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 18px; }
         
         /* Przycisk Dodaj Pozycję */
         .btn-add-item {
-            background: #333; color: #fff; border: none; padding: 10px; width: 100%;
-            border-radius: 8px; margin-top: 10px; cursor: pointer; font-size: 13px; text-transform: uppercase;
+            background: #333; color: #fff; border: none; padding: 12px; width: 100%;
+            border-radius: 10px; margin-top: 12px; cursor: pointer; font-size: 13px; text-transform: uppercase; font-weight: 600;
         }
         .btn-add-item:hover { background: #555; }
 
         .btn-calc {
-            width: 100%; background: transparent; color: var(--dark); border: 2px solid var(--primary); padding: 15px;
-            font-size: 15px; font-weight: 700; border-radius: 10px; cursor: pointer;
+            width: 100%; background: transparent; color: var(--dark); border: 2px solid var(--primary); padding: 18px;
+            font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer;
             text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s;
-            margin-top: 20px;
+            margin-top: 30px;
         }
         .btn-calc:hover { background: var(--primary); color: #000; }
 
         #result-section { 
             display: none; 
-            margin-top: 30px; 
-            padding-top: 20px; 
+            margin-top: 40px; 
+            padding-top: 30px; 
             border-top: 2px dashed #eee;
             animation: slideDown 0.5s ease-out;
         }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         .price-box {
-            background: var(--dark); color: white; padding: 20px; border-radius: 12px;
-            text-align: center; margin-bottom: 20px;
+            background: var(--dark); color: white; padding: 25px; border-radius: 16px;
+            text-align: center; margin-bottom: 25px;
         }
-        .price-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-        .price-val { font-size: 24px; font-weight: 700; color: var(--primary); display: block; margin-top: 5px; line-height: 1.2; }
+        .price-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+        .price-val { font-size: 28px; font-weight: 700; color: var(--primary); display: block; margin-top: 5px; line-height: 1.2; }
 
         .contact-box {
-            text-align: center; margin-bottom: 20px; padding: 15px; border: 2px solid #000; border-radius: 10px;
-            font-weight: 700; font-size: 15px; text-transform: uppercase;
+            text-align: center; margin-bottom: 25px; padding: 20px; border: 2px solid #000; border-radius: 12px;
+            font-weight: 700; font-size: 16px; text-transform: uppercase;
         }
-        .phone-link { color: var(--primary); text-decoration: none; display: block; font-size: 18px; margin-top: 5px; }
+        .phone-link { color: var(--primary); text-decoration: none; display: block; font-size: 20px; margin-top: 5px; }
 
-        .form-header { text-align: center; font-weight: 600; margin-bottom: 15px; font-size: 13px; color: #333; line-height: 1.4; }
+        .form-header { text-align: center; font-weight: 600; margin-bottom: 15px; font-size: 14px; color: #333; line-height: 1.5; }
 
         .btn-send {
-            width: 100%; background: var(--primary); color: #000; border: none; padding: 16px;
-            font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s; margin-top: 5px;
+            width: 100%; background: var(--primary); color: #000; border: none; padding: 18px;
+            font-size: 16px; font-weight: 700; border-radius: 10px; cursor: pointer;
+            text-transform: uppercase; transition: 0.3s; margin-top: 10px;
             box-shadow: 0 4px 10px rgba(255, 194, 0, 0.3);
         }
         .btn-send:hover { background: #e0aa00; transform: translateY(-2px); }
-        .info-text { font-size: 10px; color: #999; margin-top: 10px; text-align: center; }
+        .info-text { font-size: 11px; color: #999; margin-top: 15px; text-align: center; }
         
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -170,7 +203,7 @@ calc_code = """
     <input type="hidden" id="sm_price_val" value="0">
     <input type="hidden" id="sm_desc" value="">
 
-    <details class="section-box" open>
+    <details class="section-box">
         <summary>Prowadzenie Social Media</summary>
         <div class="content">
             <div class="presets-container">
@@ -422,7 +455,7 @@ calc_code = """
         // Reset
         sel.value = "0";
         qtyInput.value = "";
-        checkGfxOther(); // ukryj hint po dodaniu
+        checkGfxOther(); 
         renderList('gfx');
     }
 
@@ -462,7 +495,7 @@ calc_code = """
         // Reset
         sel.value = "0";
         qtyInput.value = "";
-        checkVidOther(); // ukryj hint po dodaniu
+        checkVidOther();
         renderList('vid');
     }
 
@@ -508,7 +541,7 @@ calc_code = """
         let smDesc = document.getElementById('sm_desc').value;
         let isSmCustom = smDesc.includes("INNE");
 
-        // GRAFIKA
+        // GRAFIKA: SUMA LISTY
         let gfxTotal = 0;
         let isGfxCustom = false;
         let gfxDescArr = [];
@@ -525,7 +558,22 @@ calc_code = """
             }
         });
 
-        // WIDEO
+        // GRAFIKA: SPRAWDZENIE AKTUALNIE WYBRANEGO (nie dodanego do listy)
+        let pendingGfxVal = parseFloat(document.getElementById('gfx_type').value) || 0;
+        let pendingGfxName = document.getElementById('gfx_type').options[document.getElementById('gfx_type').selectedIndex].text;
+        let pendingGfxQty = parseInt(document.getElementById('gfx_qty').value) || 0;
+
+        if (pendingGfxName === "Inne") {
+             isGfxCustom = true;
+             gfxDescArr.push("Grafika: INNE (zaznaczone)");
+        } else if (pendingGfxVal > 0 && pendingGfxQty > 0) {
+             let itemTotal = pendingGfxVal * pendingGfxQty;
+             if (pendingGfxQty > 1) itemTotal *= 0.9;
+             gfxTotal += itemTotal;
+             gfxDescArr.push(`${pendingGfxName} x${pendingGfxQty} (zaznaczone)`);
+        }
+
+        // WIDEO: SUMA LISTY
         let vidTotal = 0;
         let isVidCustom = false;
         let vidDescArr = [];
@@ -534,10 +582,27 @@ calc_code = """
                 isVidCustom = true;
                 vidDescArr.push("Wideo: INNE");
             } else {
-                vidTotal += (item.price * item.qty);
+                let itemTotal = item.price * item.qty;
+                if (item.qty > 1) itemTotal *= 0.9; // RABAT 10%
+                vidTotal += itemTotal;
                 vidDescArr.push(`${item.name} x${item.qty}`);
             }
         });
+
+        // WIDEO: SPRAWDZENIE AKTUALNIE WYBRANEGO (nie dodanego do listy)
+        let pendingVidVal = parseFloat(document.getElementById('vid_type').value) || 0;
+        let pendingVidName = document.getElementById('vid_type').options[document.getElementById('vid_type').selectedIndex].text;
+        let pendingVidQty = parseInt(document.getElementById('vid_qty').value) || 0;
+
+        if (pendingVidName === "Inne") {
+             isVidCustom = true;
+             vidDescArr.push("Wideo: INNE (zaznaczone)");
+        } else if (pendingVidVal > 0 && pendingVidQty > 0) {
+             let itemTotal = pendingVidVal * pendingVidQty;
+             if (pendingVidQty > 1) itemTotal *= 0.9; // RABAT 10%
+             vidTotal += itemTotal;
+             vidDescArr.push(`${pendingVidName} x${pendingVidQty} (zaznaczone)`);
+        }
 
         // DODATKI
         let useDrone = document.getElementById('drone').checked;
@@ -604,4 +669,4 @@ calc_code = """
 </html>
 """
 
-components.html(calc_code, height=1500, scrolling=False)
+components.html(calc_code, height=1600, scrolling=False)
