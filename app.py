@@ -33,9 +33,7 @@ calc_code = """
 
         .container { 
             background: white; 
-            /* ZWIĘKSZONA PRZESTRZEŃ WEWNĄTRZ */
             padding: 40px 25px; 
-            /* MOCNIEJSZE ZAOKRĄGLENIE ROGÓW */
             border-radius: 24px; 
             box-shadow: var(--shadow); 
             width: 100%; 
@@ -45,7 +43,6 @@ calc_code = """
             padding-bottom: 50px; 
         }
 
-        /* NAGŁÓWEK BORN TO BRAND - DUŻO WIĘKSZY */
         h1 { 
             text-align: center; 
             font-weight: 700; 
@@ -53,38 +50,49 @@ calc_code = """
             letter-spacing: 1px; 
             margin-top: 0;
             margin-bottom: 5px; 
-            font-size: 42px; /* Zwiększone z 24px */
+            font-size: 42px; 
             line-height: 1.1; 
         }
         h1 span { color: var(--primary); }
         
-        /* CENNIK USŁUG - DELIKATNIEJSZY I Z ODSTĘPEM */
         .cennik-label { 
             text-align: center; 
             font-size: 14px; 
             font-weight: 600; 
             text-transform: uppercase; 
-            margin-bottom: 35px; /* Więcej oddechu */
+            margin-bottom: 35px; 
             color: #888; 
             letter-spacing: 3px;
         }
         
         .subtitle { text-align: center; font-size: 15px; color: #444; margin-bottom: 25px; font-weight: 500; }
 
+        /* --- RESPONSYWNOŚĆ (POPRAWKA NA TELEFONY) --- */
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px 15px; /* Mniejsze marginesy wewn. na telefonie */
+            }
+            h1 {
+                font-size: 28px; /* Mniejsza czcionka nagłówka */
+                margin-bottom: 10px;
+            }
+            .cennik-label {
+                font-size: 12px;
+                margin-bottom: 25px;
+            }
+        }
+
+        /* Sekcje */
         .section-box { border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
         
         summary { padding: 18px; background: #fff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; font-size: 15px; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '+'; font-size: 20px; color: var(--primary); transition: 0.3s; }
         
-        /* Obsługa otwierania */
         details[open] summary::after { transform: rotate(45deg); }
         details[open] summary { border-bottom: 1px solid #f0f0f0; background: #fafafa; }
         
-        /* Animacja pojawiania się treści */
-        details[open] .content {
-            animation: fadeIn 0.4s ease-out;
-        }
+        details[open] .content { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
@@ -92,7 +100,7 @@ calc_code = """
 
         .content { padding: 20px; background: #fff; }
 
-        /* Pakiety Social Media */
+        /* Pakiety */
         .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         
         .btn-preset {
@@ -126,14 +134,13 @@ calc_code = """
 
         .hint-text { font-size: 12px; color: #666; margin-top: 15px; font-style: italic; line-height: 1.5; background: #f9f9f9; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
 
-        /* Custom Hints */
         .custom-hint-box {
             display: none;
             font-size: 12px; color: #555; background: #fff3cd; 
             padding: 15px; border-radius: 8px; margin-top: 15px; line-height: 1.5; border: 1px solid #ffeeba;
         }
 
-        /* Stylizacja listy dodanych elementów */
+        /* Lista dodanych */
         .added-items-list { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
         .added-item { 
             display: flex; justify-content: space-between; align-items: center; 
@@ -141,7 +148,6 @@ calc_code = """
         }
         .added-item .remove-btn { color: red; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 18px; }
         
-        /* Przycisk Dodaj Pozycję */
         .btn-add-item {
             background: #333; color: #fff; border: none; padding: 12px; width: 100%;
             border-radius: 10px; margin-top: 12px; cursor: pointer; font-size: 13px; text-transform: uppercase; font-weight: 600;
