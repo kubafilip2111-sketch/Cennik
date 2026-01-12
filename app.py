@@ -1,7 +1,7 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# Tytuł aplikacji
+# Konfiguracja strony
 st.set_page_config(page_title="Kalkulator Born to Brand", layout="centered")
 
 # Kod HTML/JS Kalkulatora
@@ -9,84 +9,128 @@ calc_html = """
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+    <meta charset="UTF-8">
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 10px; }
-        .calc-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 500px; margin: auto; }
-        h2 { color: #000; text-transform: uppercase; font-size: 1.2em; border-bottom: 2px solid #e67e22; padding-bottom: 5px; }
-        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 0.9em; }
-        select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .checkbox-row { display: flex; align-items: center; gap: 10px; margin: 15px 0; }
-        .checkbox-row input { width: auto; }
-        .btn-calc { width: 100%; background: #e67e22; color: white; border: none; padding: 15px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 20px; }
-        .result { background: #000; color: #fff; text-align: center; padding: 15px; border-radius: 8px; margin-top: 20px; }
-        .price { font-size: 2em; color: #e67e22; display: block; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8f9fa; color: #333; padding: 10px; }
+        .calc-container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); max-width: 480px; margin: auto; }
+        h1 { text-align: center; color: #000; font-size: 24px; text-transform: uppercase; border-bottom: 4px solid #e67e22; padding-bottom: 10px; margin-bottom: 25px; }
+        h2 { font-size: 15px; margin-top: 20px; color: #555; text-transform: uppercase; letter-spacing: 1px; border-left: 4px solid #e67e22; padding-left: 10px; }
+        label { display: block; margin: 12px 0 5px; font-weight: bold; font-size: 14px; }
+        select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #fff; }
+        
+        /* Panel Opcji Dodatkowych */
+        .extra-panel { background: #fdf2e9; padding: 15px; border-radius: 10px; margin-top: 20px; border: 1px solid #fad7bc; }
+        .checkbox-row { display: flex; align-items: center; gap: 12px; margin: 10px 0; cursor: pointer; font-size: 14px; }
+        .checkbox-row input { width: 18px; height: 18px; accent-color: #e67e22; }
+
+        .btn-calc { width: 100%; background: #e67e22; color: white; border: none; padding: 16px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 25px; transition: 0.3s; text-transform: uppercase; }
+        .btn-calc:hover { background: #d35400; }
+        
+        .result-box { background: #000; color: #fff; text-align: center; padding: 20px; border-radius: 12px; margin-top: 25px; }
+        .total-label { font-size: 14px; color: #bbb; text-transform: uppercase; }
+        .total-price { font-size: 32px; color: #e67e22; font-weight: bold; display: block; }
     </style>
 </head>
 <body>
-    <div class="calc-card">
-        <h2>1. Social Media</h2>
-        <label>Pakiet:</label>
-        <select id="sm">
-            <option value="0">Brak</option>
-            <option value="600">Basic (do 4 rolek/postów) - ok. 600zł</option>
-            <option value="1500">Standard (4-6 rolek) - 1500zł</option>
-            <option value="2000">Premium (6-10 rolek) - 2000zł</option>
-        </select>
 
-        <h2>2. Grafika</h2>
-        <label>Rodzaj:</label>
-        <select id="gfx_type">
-            <option value="0">Brak</option>
-            <option value="150">Baner/Ulotka (150zł)</option>
-            <option value="100">Wizytówka (100zł)</option>
-            <option value="100">Grafika SM (100zł)</option>
-        </select>
-        <label>Ilość:</label>
-        <input type="number" id="gfx_qty" value="0" min="0">
+<div class="calc-container">
+    <h1>Born to Brand</h1>
 
-        <h2>3. Wideo</h2>
-        <label>Długość:</label>
-        <select id="vid">
-            <option value="0">Brak</option>
-            <option value="200">Rolka do 30s (200zł)</option>
-            <option value="350">Rolka 30-60s (350zł)</option>
-            <option value="450">Film 1-2 min (450zł)</option>
-            <option value="550">Film 2min+ (550zł)</option>
-        </select>
-        <div class="checkbox-row">
-            <input type="checkbox" id="drone"> <label>Użycie drona (+20%)</label>
-        </div>
-        <div class="checkbox-row">
-            <input type="checkbox" id="dist"> <label>Dojazd powyżej 60km (+15% wideo)</label>
-        </div>
+    <h2>1. Obsługa Social Media</h2>
+    <label>Zakres współpracy:</label>
+    <select id="sm">
+        <option value="0">Brak obsługi miesięcznej</option>
+        <option value="600">Pakiet Basic (do 4 treści/mies.)</option>
+        <option value="1500">Pakiet Standard (4-6 rolek + grafiki)</option>
+        <option value="2000">Pakiet Premium (6-10 rolek + grafiki)</option>
+    </select>
 
-        <button class="btn-calc" onclick="calculate()">OBLICZ WYCENĘ</button>
+    <h2>2. Projekty Graficzne</h2>
+    <label>Rodzaj grafiki:</label>
+    <select id="gfx_type">
+        <option value="0">Brak projektów</option>
+        <option value="150">Baner lub Ulotka</option>
+        <option value="100">Projekt wizytówki</option>
+        <option value="100">Grafika do Social Media</option>
+    </select>
+    <label>Ilość projektów:</label>
+    <input type="number" id="gfx_qty" value="0" min="0">
 
-        <div class="result">
-            Suma zamówienia:
-            <span class="price" id="total">0 zł</span>
-        </div>
+    <h2>3. Produkcja Filmowa</h2>
+    <label>Długość i format:</label>
+    <select id="vid">
+        <option value="0">Brak realizacji wideo</option>
+        <option value="200">Rolka/Short (do 30s)</option>
+        <option value="350">Rolka/Short (30s - 60s)</option>
+        <option value="450">Film promocyjny (1 - 2 min)</option>
+        <option value="550">Film długi (powyżej 2 min)</option>
+    </select>
+
+    <div class="extra-panel">
+        <h2>Opcje dodatkowe i logistyka</h2>
+        
+        <label class="checkbox-row">
+            <input type="checkbox" id="drone">
+            Czy wykorzystać ujęcia z drona?
+        </label>
+        
+        <label class="checkbox-row">
+            <input type="checkbox" id="location">
+            Realizacja powyżej 60km od Oświęcimia
+        </label>
     </div>
 
-    <script>
-        function calculate() {
-            let sm = parseFloat(document.getElementById('sm').value);
-            
-            let gfxBase = parseFloat(document.getElementById('gfx_type').value);
-            let gfxQty = parseInt(document.getElementById('gfx_qty').value) || 0;
-            let gfxTotal = gfxBase * gfxQty;
-            if(gfxQty > 1) gfxTotal *= 0.9;
+    <button class="btn-calc" onclick="calculate()">Oblicz wartość zlecenia</button>
 
-            let vidBase = parseFloat(document.getElementById('vid').value);
-            if(document.getElementById('drone').checked) vidBase *= 1.2;
-            if(document.getElementById('dist').checked) vidBase *= 1.15;
+    <div class="result-box">
+        <span class="total-label">Szacunkowy koszt usług:</span>
+        <span class="total-price" id="total">0 zł</span>
+    </div>
+</div>
 
-            document.getElementById('total').innerText = Math.round(sm + gfxTotal + vidBase) + " zł";
+<script>
+function calculate() {
+    // 1. Social Media
+    let sm = parseFloat(document.getElementById('sm').value);
+    
+    // 2. Grafika (Rabat 10% przy pakiecie powyżej 1 szt)
+    let gBase = parseFloat(document.getElementById('gfx_type').value);
+    let gQty = parseInt(document.getElementById('gfx_qty').value) || 0;
+    let gTotal = gBase * gQty;
+    if(gQty > 1) {
+        gTotal *= 0.9; 
+    }
+
+    // 3. Wideo + Ukryte mnożniki
+    let vBase = parseFloat(document.getElementById('vid').value);
+    let vTotal = vBase;
+    
+    if(vBase > 0) {
+        // Dodatek za drona (ukryte +20%)
+        if(document.getElementById('drone').checked) {
+            vTotal *= 1.20;
         }
-    </script>
+        // Dodatek za dojazd (ukryte +15%)
+        if(document.getElementById('location').checked) {
+            vTotal *= 1.15;
+        }
+    }
+
+    // Suma końcowa
+    let finalResult = sm + gTotal + vTotal;
+
+    // Zabezpieczenie przed wynikiem ujemnym
+    if (finalResult < 0) {
+        finalResult = 0;
+    }
+
+    document.getElementById('total').innerText = Math.round(finalResult) + " zł";
+}
+</script>
+
 </body>
 </html>
 """
 
-# Renderowanie kalkulatora w Streamlit
-components.html(calc_html, height=850, scrolling=True)
+# Renderowanie w PyCharm/Streamlit
+components.html(calc_html, height=950, scrolling=True)
