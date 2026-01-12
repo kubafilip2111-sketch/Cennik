@@ -1,10 +1,10 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. Zmiana layoutu na wide (szeroki) - kluczowe dla mobile
+# 1. Layout wide
 st.set_page_config(page_title="Kalkulator Born to Brand", layout="wide")
 
-# 2. Hack CSS dla Streamlit - usuwa grube marginesy aplikacji na telefonie
+# 2. CSS Hack
 st.markdown("""
     <style>
         .block-container {
@@ -13,7 +13,6 @@ st.markdown("""
             padding-left: 0.5rem;
             padding-right: 0.5rem;
         }
-        /* Ukrycie stopki i menu dla czystszego wyglądu */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
     </style>
@@ -30,10 +29,8 @@ calc_code = """
     <style>
         :root { --primary: #ffc200; --dark: #1a1a1a; --light: #f8f9fa; --shadow: 0 4px 20px rgba(0,0,0,0.08); }
 
-        /* Zmniejszamy padding body, żeby było szerzej */
         body { font-family: 'Poppins', sans-serif; background: transparent; color: var(--dark); margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Container: max-width 600px dla PC, ale 100% dla mobilnych */
         .container { 
             background: white; 
             padding: 20px 15px; 
@@ -46,17 +43,14 @@ calc_code = """
             padding-bottom: 50px; 
         }
 
-        /* Nagłówki */
         h1 { text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-size: 24px; line-height: 1.2; }
         h1 span { color: var(--primary); }
         
         .cennik-label { text-align: center; font-size: 16px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; color: #333; letter-spacing: 1px;}
         .subtitle { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; font-weight: 500; }
 
-        /* Sekcje rozwijane (Accordions) */
         .section-box { border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
-        .section-box:hover { border-color: #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-
+        
         summary { padding: 15px; background: #fff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; font-size: 14px; }
         summary::-webkit-details-marker { display: none; }
         summary::after { content: '+'; font-size: 20px; color: var(--primary); transition: 0.3s; }
@@ -66,7 +60,7 @@ calc_code = """
         .content { padding: 15px; background: #fff; }
 
         /* Pakiety Social Media */
-        .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+        .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
         
         .btn-preset {
             background: #fff; border: 2px solid #eee; padding: 12px 5px; border-radius: 10px;
@@ -97,10 +91,30 @@ calc_code = """
         .checkbox-row input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
         .checkbox-hint { font-size: 10px; color: #999; margin-left: 30px; margin-bottom: 8px; line-height: 1.2; }
 
-        /* Mały druczek / Hinty */
         .hint-text { font-size: 11px; color: #666; margin-top: 15px; font-style: italic; line-height: 1.4; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 3px solid var(--primary); }
 
-        /* Przycisk Oblicz */
+        /* Custom Hints (ukryte domyślnie) */
+        .custom-hint-box {
+            display: none;
+            font-size: 11px; color: #555; background: #fff3cd; 
+            padding: 10px; border-radius: 6px; margin-top: 10px; line-height: 1.4; border: 1px solid #ffeeba;
+        }
+
+        /* Stylizacja listy dodanych elementów */
+        .added-items-list { margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px; }
+        .added-item { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: #f8f9fa; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px; font-size: 13px;
+        }
+        .added-item .remove-btn { color: red; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 16px; }
+        
+        /* Przycisk Dodaj Pozycję */
+        .btn-add-item {
+            background: #333; color: #fff; border: none; padding: 10px; width: 100%;
+            border-radius: 8px; margin-top: 10px; cursor: pointer; font-size: 13px; text-transform: uppercase;
+        }
+        .btn-add-item:hover { background: #555; }
+
         .btn-calc {
             width: 100%; background: transparent; color: var(--dark); border: 2px solid var(--primary); padding: 15px;
             font-size: 15px; font-weight: 700; border-radius: 10px; cursor: pointer;
@@ -109,7 +123,6 @@ calc_code = """
         }
         .btn-calc:hover { background: var(--primary); color: #000; }
 
-        /* Wynik */
         #result-section { 
             display: none; 
             margin-top: 30px; 
@@ -124,9 +137,8 @@ calc_code = """
             text-align: center; margin-bottom: 20px;
         }
         .price-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-        .price-val { font-size: 28px; font-weight: 700; color: var(--primary); display: block; margin-top: 5px; }
+        .price-val { font-size: 24px; font-weight: 700; color: var(--primary); display: block; margin-top: 5px; line-height: 1.2; }
 
-        /* Kontakt i Formularz */
         .contact-box {
             text-align: center; margin-bottom: 20px; padding: 15px; border: 2px solid #000; border-radius: 10px;
             font-weight: 700; font-size: 15px; text-transform: uppercase;
@@ -194,10 +206,13 @@ calc_code = """
                         <li>10x Relacji (Stories)</li>
                     </ul>
                 </div>
-                <div class="btn-preset full-width" onclick="selectPackage(this, 0, 'Indywidualna', 'Wycena indywidualna')">
-                    <strong>Inne - Wycena Indywidualna</strong>
-                    <span style="font-size:11px; color:#555">Kliknij, aby poprosić o niestandardową ofertę</span>
+                <div class="btn-preset full-width" onclick="selectPackage(this, 0, 'INNE', 'Wycena indywidualna')">
+                    <strong>INNE</strong>
                 </div>
+            </div>
+
+            <div id="sm-custom-hint" class="custom-hint-box">
+                Twoje oczekiwania nie spełnia żaden z pakietów? Zaznacz tę opcję, na dole strony kliknij <b>OBLICZ SZACUNKOWY KOSZT</b> oraz w formularzu napisz co oczekujesz, a my odeślemy wycenę na maila i smsem!
             </div>
 
             <div class="hint-text">
@@ -209,35 +224,57 @@ calc_code = """
     <details class="section-box">
         <summary>Projektowanie Graficzne</summary>
         <div class="content">
-            <label>Rodzaj projektu</label>
-            <select id="gfx_type">
+            <label>Dodaj pozycję do wyceny:</label>
+            <select id="gfx_type" onchange="checkGfxOther()">
                 <option value="0">Wybierz...</option>
-                <option value="150">Baner / Ulotka</option>
+                <option value="150">Baner</option>
+                <option value="150">Ulotka</option>
                 <option value="100">Wizytówka</option>
-                <option value="100">Post Social Media (pojedynczy)</option>
+                <option value="100">Grafika Social Media</option>
+                <option value="0">Inne</option>
             </select>
+
+            <div id="gfx-custom-hint" class="custom-hint-box">
+                Twoje oczekiwania nie spełnia żaden z podpunktów? Zaznacz tę opcję, na dole strony kliknij <b>OBLICZ SZACUNKOWY KOSZT</b> oraz w formularzu napisz co oczekujesz, a my odeślemy wycenę na maila i smsem!
+            </div>
+
             <label style="margin-top:10px">Ilość sztuk</label>
             <input type="number" id="gfx_qty" min="0" placeholder="0" oninput="validity.valid||(value='');">
             
-            <div class="hint-text">
-                * Istnieje możliwość zlecenia druku (wycena indywidualna).
-            </div>
+            <button class="btn-add-item" onclick="addGfxItem()">+ Dodaj kolejną pozycję</button>
+
+            <div id="gfx-list" class="added-items-list" style="display:none;"></div>
+            
+            <label class="checkbox-row" style="margin-top:15px; border-top: 1px dashed #eee; padding-top:10px;">
+                <input type="checkbox" id="gfx_print">
+                <span>Zlecam również druk</span>
+            </label>
         </div>
     </details>
 
     <details class="section-box">
         <summary>Tworzenie Filmów</summary>
         <div class="content">
-            <label>Rodzaj filmu</label>
-            <select id="vid_type">
+            <label>Dodaj pozycję do wyceny:</label>
+            <select id="vid_type" onchange="checkVidOther()">
                 <option value="0">Wybierz...</option>
                 <option value="200">Rolka do 30s</option>
                 <option value="350">Rolka 30s-60s</option>
                 <option value="450">Film 1-2 min</option>
                 <option value="550">Film > 2 min</option>
+                <option value="0">Inne</option>
             </select>
+
+            <div id="vid-custom-hint" class="custom-hint-box">
+                Twoje oczekiwania nie spełnia żaden z podpunktów? Zaznacz tę opcję, na dole strony kliknij <b>OBLICZ SZACUNKOWY KOSZT</b> oraz w formularzu napisz co oczekujesz, a my odeślemy wycenę na maila i smsem!
+            </div>
+
             <label style="margin-top:10px">Ilość filmów</label>
             <input type="number" id="vid_qty" min="0" placeholder="0" oninput="validity.valid||(value='');">
+            
+            <button class="btn-add-item" onclick="addVidItem()">+ Dodaj kolejną pozycję</button>
+
+            <div id="vid-list" class="added-items-list" style="display:none;"></div>
             
             <div class="hint-text">
                 * Cena obejmuje nagranie wideo oraz profesjonalny montaż.
@@ -307,6 +344,10 @@ calc_code = """
 </div>
 
 <script>
+    // --- VARIABLES TO STORE MULTI-SELECT ITEMS ---
+    let graphicsList = [];
+    let videoList = [];
+
     function resizeStreamlit() {
         const height = document.body.scrollHeight;
         const frame = window.frameElement;
@@ -314,26 +355,146 @@ calc_code = """
     }
     new ResizeObserver(resizeStreamlit).observe(document.body);
 
+    // --- SOCIAL MEDIA LOGIC (Toggle functionality) ---
     function selectPackage(element, price, name, details) {
-        document.querySelectorAll('.btn-preset').forEach(el => el.classList.remove('active'));
-        
-        let currentDesc = document.getElementById('sm_desc').value;
-        let isSame = element.innerText.includes(name) && document.getElementById('sm_price_val').value == price;
-
-        if(isSame && name !== 'Indywidualna') {
+        // Sprawdź czy ten element jest już aktywny
+        if (element.classList.contains('active')) {
+            // ODZNACZ (Deselect)
+            element.classList.remove('active');
             document.getElementById('sm_price_val').value = 0;
             document.getElementById('sm_desc').value = "";
+            document.getElementById('sm-custom-hint').style.display = 'none';
         } else {
+            // ZAZNACZ (Select new)
+            // Najpierw usuń klasę active ze wszystkich
+            document.querySelectorAll('.btn-preset').forEach(el => el.classList.remove('active'));
+            
+            // Dodaj do klikniętego
             element.classList.add('active');
             document.getElementById('sm_price_val').value = price;
-            if (name === 'Indywidualna') {
-                 document.getElementById('sm_desc').value = "Social Media: Wycena Indywidualna";
+            
+            // Obsługa INNE
+            let hintBox = document.getElementById('sm-custom-hint');
+            if (name === 'INNE') {
+                 document.getElementById('sm_desc').value = "Social Media: Wycena Indywidualna (INNE)";
+                 hintBox.style.display = 'block';
             } else {
                  document.getElementById('sm_desc').value = `Pakiet ${name} (${details})`;
+                 hintBox.style.display = 'none';
             }
         }
+        resizeStreamlit();
     }
 
+    // --- GRAPHICS LOGIC ---
+    function checkGfxOther() {
+        let sel = document.getElementById('gfx_type');
+        let text = sel.options[sel.selectedIndex].text;
+        let hint = document.getElementById('gfx-custom-hint');
+        
+        if (text === "Inne") {
+            hint.style.display = 'block';
+        } else {
+            hint.style.display = 'none';
+        }
+        resizeStreamlit();
+    }
+
+    function addGfxItem() {
+        let sel = document.getElementById('gfx_type');
+        let qtyInput = document.getElementById('gfx_qty');
+        let price = parseFloat(sel.value);
+        let name = sel.options[sel.selectedIndex].text;
+        let qty = parseInt(qtyInput.value);
+
+        if (sel.value === "0" && name !== "Inne") {
+            alert("Wybierz rodzaj projektu!"); 
+            return;
+        }
+        if ((!qty || qty <= 0) && name !== "Inne") {
+            alert("Podaj ilość!"); 
+            return;
+        }
+        if (name === "Inne") qty = 1;
+
+        graphicsList.push({ name: name, price: price, qty: qty, isOther: (name === "Inne") });
+        
+        // Reset
+        sel.value = "0";
+        qtyInput.value = "";
+        checkGfxOther(); // ukryj hint po dodaniu
+        renderList('gfx');
+    }
+
+    // --- VIDEO LOGIC ---
+    function checkVidOther() {
+        let sel = document.getElementById('vid_type');
+        let text = sel.options[sel.selectedIndex].text;
+        let hint = document.getElementById('vid-custom-hint');
+        
+        if (text === "Inne") {
+            hint.style.display = 'block';
+        } else {
+            hint.style.display = 'none';
+        }
+        resizeStreamlit();
+    }
+
+    function addVidItem() {
+        let sel = document.getElementById('vid_type');
+        let qtyInput = document.getElementById('vid_qty');
+        let price = parseFloat(sel.value);
+        let name = sel.options[sel.selectedIndex].text;
+        let qty = parseInt(qtyInput.value);
+
+        if (sel.value === "0" && name !== "Inne") {
+             alert("Wybierz rodzaj filmu!"); 
+             return;
+        }
+        if ((!qty || qty <= 0) && name !== "Inne") {
+             alert("Podaj ilość!"); 
+             return;
+        }
+        if (name === "Inne") qty = 1;
+
+        videoList.push({ name: name, price: price, qty: qty, isOther: (name === "Inne") });
+        
+        // Reset
+        sel.value = "0";
+        qtyInput.value = "";
+        checkVidOther(); // ukryj hint po dodaniu
+        renderList('vid');
+    }
+
+    function removeItem(type, index) {
+        if (type === 'gfx') graphicsList.splice(index, 1);
+        if (type === 'vid') videoList.splice(index, 1);
+        renderList(type);
+    }
+
+    function renderList(type) {
+        let listArr = (type === 'gfx') ? graphicsList : videoList;
+        let container = document.getElementById(type + '-list');
+        
+        if (listArr.length === 0) {
+            container.style.display = 'none';
+            container.innerHTML = '';
+        } else {
+            container.style.display = 'block';
+            let html = "";
+            listArr.forEach((item, index) => {
+                let desc = item.isOther ? "Inne (Wycena Indywidualna)" : `${item.name} x${item.qty}`;
+                html += `<div class="added-item">
+                            <span>${desc}</span>
+                            <span class="remove-btn" onclick="removeItem('${type}', ${index})">&times;</span>
+                         </div>`;
+            });
+            container.innerHTML = html;
+        }
+        resizeStreamlit();
+    }
+
+    // --- CALCULATION LOGIC ---
     function showCalculation() {
         calculateLogic();
         document.getElementById('result-section').style.display = 'block';
@@ -345,24 +506,43 @@ calc_code = """
         // SOCIAL MEDIA
         let smPrice = parseInt(document.getElementById('sm_price_val').value) || 0;
         let smDesc = document.getElementById('sm_desc').value;
-        let isSmCustom = smDesc.includes("Indywidualna");
+        let isSmCustom = smDesc.includes("INNE");
 
         // GRAFIKA
-        let gfxBase = parseFloat(document.getElementById('gfx_type').value);
-        let gfxName = document.getElementById('gfx_type').options[document.getElementById('gfx_type').selectedIndex].text;
-        let gfxQty = parseInt(document.getElementById('gfx_qty').value) || 0;
-        let gfxTotal = gfxBase * gfxQty;
-        if(gfxQty > 1) gfxTotal *= 0.9; 
+        let gfxTotal = 0;
+        let isGfxCustom = false;
+        let gfxDescArr = [];
+        
+        graphicsList.forEach(item => {
+            if (item.isOther) {
+                isGfxCustom = true;
+                gfxDescArr.push("Grafika: INNE");
+            } else {
+                let itemTotal = item.price * item.qty;
+                if (item.qty > 1) itemTotal *= 0.9; 
+                gfxTotal += itemTotal;
+                gfxDescArr.push(`${item.name} x${item.qty}`);
+            }
+        });
 
         // WIDEO
-        let vidBase = parseFloat(document.getElementById('vid_type').value);
-        let vidName = document.getElementById('vid_type').options[document.getElementById('vid_type').selectedIndex].text;
-        let vidQty = parseInt(document.getElementById('vid_qty').value) || 0;
-        let vidTotal = vidBase * vidQty;
+        let vidTotal = 0;
+        let isVidCustom = false;
+        let vidDescArr = [];
+        videoList.forEach(item => {
+            if (item.isOther) {
+                isVidCustom = true;
+                vidDescArr.push("Wideo: INNE");
+            } else {
+                vidTotal += (item.price * item.qty);
+                vidDescArr.push(`${item.name} x${item.qty}`);
+            }
+        });
 
         // DODATKI
         let useDrone = document.getElementById('drone').checked;
         let useTravel = document.getElementById('travel').checked;
+        let usePrint = document.getElementById('gfx_print').checked; 
 
         // Dron
         let droneBase = gfxTotal + vidTotal;
@@ -385,24 +565,37 @@ calc_code = """
         let total = Math.round(smPrice + gfxTotal + vidTotal + droneCost + travelCost);
         let displayTotal = total + " zł";
         
-        if (isSmCustom) {
+        // Logika wyświetlania "Wycena Indywidualna"
+        let forceCustom = false;
+        if (isSmCustom) forceCustom = true;
+        if (isGfxCustom) forceCustom = true;
+        if (isVidCustom) forceCustom = true;
+
+        if (forceCustom) {
             if (total > 0) {
-                 displayTotal = total + " zł + Wycena SM";
+                 displayTotal = total + " zł + Wycena Indywidualna";
             } else {
                  displayTotal = "Wycena Indywidualna";
             }
+        }
+        
+        if (usePrint) {
+            displayTotal += " + Druk (napisz w formularzu poniżej szczegóły)";
         }
 
         document.getElementById('total-display').innerText = displayTotal;
         document.getElementById('hidden-total').value = displayTotal;
 
-        // Opis
+        // Opis do formularza
         let desc = [];
         if (smDesc !== "") desc.push(smDesc);
-        if (gfxQty > 0) desc.push(`${gfxName} x${gfxQty}`);
-        if (vidQty > 0) desc.push(`${vidName} x${vidQty}`);
+        if (gfxDescArr.length > 0) desc.push("GRAFIKA: " + gfxDescArr.join(", "));
+        if (usePrint) desc.push("+ DRUK (do wyceny)");
+        if (vidDescArr.length > 0) desc.push("WIDEO: " + vidDescArr.join(", "));
+        
         if (useDrone) desc.push("+ Dron");
         if (useTravel) desc.push("+ Dojazd");
+        
         document.getElementById('hidden-details').value = desc.join(" | ");
     }
 </script>
@@ -411,4 +604,4 @@ calc_code = """
 </html>
 """
 
-components.html(calc_code, height=1400, scrolling=False)
+components.html(calc_code, height=1500, scrolling=False)
