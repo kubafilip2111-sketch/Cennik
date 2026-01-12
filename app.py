@@ -61,7 +61,8 @@ calc_code = """
             font-weight: 700; 
             text-transform: uppercase; 
             letter-spacing: 1px; 
-            margin-top: 0;
+            /* ZMIANA: Dodano margines górny, żeby nie ucinało napisu */
+            margin-top: 10px;
             margin-bottom: 5px; 
             font-size: 42px; 
             line-height: 1.1; 
