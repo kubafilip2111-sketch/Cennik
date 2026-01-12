@@ -1,7 +1,23 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Kalkulator Born to Brand", layout="centered")
+# 1. Zmiana layoutu na wide (szeroki)
+st.set_page_config(page_title="Kalkulator Born to Brand", layout="wide")
+
+# 2. Hack CSS dla Streamlit - usuwa grube marginesy aplikacji na telefonie
+st.markdown("""
+    <style>
+        .block-container {
+            padding-top: 1rem;
+            padding-bottom: 0rem;
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        /* Ukrycie stopki i menu dla czystszego wyglądu */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+    </style>
+""", unsafe_allow_html=True)
 
 # Kod HTML/CSS/JS
 calc_code = """
@@ -14,48 +30,60 @@ calc_code = """
     <style>
         :root { --primary: #ffc200; --dark: #1a1a1a; --light: #f8f9fa; --shadow: 0 4px 20px rgba(0,0,0,0.08); }
 
-        body { font-family: 'Poppins', sans-serif; background: transparent; color: var(--dark); margin: 0; padding: 10px; box-sizing: border-box; }
+        /* Zmniejszamy padding body, żeby było szerzej */
+        body { font-family: 'Poppins', sans-serif; background: transparent; color: var(--dark); margin: 0; padding: 0; box-sizing: border-box; }
 
-        .container { background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow); max-width: 600px; margin: auto; position: relative; padding-bottom: 50px; }
+        /* Container: max-width 600px dla PC, ale 100% dla mobilnych */
+        .container { 
+            background: white; 
+            padding: 20px 15px; /* Mniejszy padding wewnątrz */
+            border-radius: 12px; 
+            box-shadow: var(--shadow); 
+            width: 100%; 
+            max-width: 600px; 
+            margin: auto; 
+            position: relative; 
+            padding-bottom: 50px; 
+        }
 
         /* Nagłówki */
-        h1 { text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-size: 26px; line-height: 1.2; }
+        h1 { text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-size: 24px; line-height: 1.2; }
         h1 span { color: var(--primary); }
         
-        .cennik-label { text-align: center; font-size: 18px; font-weight: 600; text-transform: uppercase; margin-bottom: 25px; color: #333; letter-spacing: 1px;}
-        .subtitle { text-align: center; font-size: 15px; color: #555; margin-bottom: 20px; font-weight: 500; }
+        .cennik-label { text-align: center; font-size: 16px; font-weight: 600; text-transform: uppercase; margin-bottom: 20px; color: #333; letter-spacing: 1px;}
+        .subtitle { text-align: center; font-size: 14px; color: #555; margin-bottom: 20px; font-weight: 500; }
 
         /* Sekcje rozwijane (Accordions) */
-        .section-box { border: 1px solid #eee; border-radius: 12px; margin-bottom: 15px; overflow: hidden; transition: 0.3s; }
+        .section-box { border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
         .section-box:hover { border-color: #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
 
-        summary { padding: 18px; background: #fff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; font-size: 15px; }
+        summary { padding: 15px; background: #fff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; font-size: 14px; }
         summary::-webkit-details-marker { display: none; }
-        summary::after { content: '+'; font-size: 22px; color: var(--primary); transition: 0.3s; }
+        summary::after { content: '+'; font-size: 20px; color: var(--primary); transition: 0.3s; }
         details[open] summary::after { transform: rotate(45deg); }
         details[open] summary { border-bottom: 1px solid #f0f0f0; background: #fafafa; }
 
-        .content { padding: 20px; background: #fff; }
+        .content { padding: 15px; background: #fff; }
 
         /* Pakiety Social Media */
-        .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
         
         .btn-preset {
-            background: #fff; border: 2px solid #eee; padding: 15px; border-radius: 12px;
+            background: #fff; border: 2px solid #eee; padding: 12px 5px; border-radius: 10px;
             cursor: pointer; transition: 0.3s; text-align: center; position: relative;
         }
         .btn-preset:hover { border-color: #ddd; background: #fafafa; }
         .btn-preset.active { border-color: var(--primary); background: #fffdf5; box-shadow: 0 4px 12px rgba(255, 194, 0, 0.15); }
         
-        .btn-preset strong { display: block; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; }
+        .btn-preset strong { display: block; font-size: 13px; margin-bottom: 5px; text-transform: uppercase; }
         .btn-preset.full-width { grid-column: span 2; }
 
-        .preset-list { font-size: 11px; color: #555; line-height: 1.6; margin: 0; padding: 0; list-style: none; }
-        .preset-list li { border-bottom: 1px solid #f0f0f0; padding: 3px 0; }
+        .preset-list { font-size: 10px; color: #555; line-height: 1.5; margin: 0; padding: 0; list-style: none; }
+        .preset-list li { border-bottom: 1px solid #f0f0f0; padding: 2px 0; }
         .preset-list li:last-child { border-bottom: none; }
 
         /* Inputy */
-        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; }
+        label { display: block; margin-bottom: 4px; font-weight: 500; font-size: 13px; }
         input[type="number"], select, input[type="text"], input[type="email"], textarea {
             width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 8px; 
             font-family: inherit; font-size: 14px; transition: 0.3s; box-sizing: border-box;
@@ -65,17 +93,17 @@ calc_code = """
 
         /* Checkboxy */
         .checkbox-group { display: flex; flex-direction: column; gap: 5px; margin-top: 20px; background: #fffdf5; padding: 15px; border-radius: 10px; border: 1px solid #ffeeba; }
-        .checkbox-row { display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 500; font-size: 14px; margin: 0; }
-        .checkbox-row input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
-        .checkbox-hint { font-size: 10px; color: #999; margin-left: 34px; margin-bottom: 8px; }
+        .checkbox-row { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; font-size: 13px; margin: 0; }
+        .checkbox-row input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
+        .checkbox-hint { font-size: 10px; color: #999; margin-left: 30px; margin-bottom: 8px; line-height: 1.2; }
 
         /* Mały druczek / Hinty */
-        .hint-text { font-size: 11px; color: #666; margin-top: 15px; font-style: italic; line-height: 1.5; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 3px solid var(--primary); }
+        .hint-text { font-size: 11px; color: #666; margin-top: 15px; font-style: italic; line-height: 1.4; background: #f9f9f9; padding: 10px; border-radius: 6px; border-left: 3px solid var(--primary); }
 
         /* Przycisk Oblicz */
         .btn-calc {
-            width: 100%; background: transparent; color: var(--dark); border: 2px solid var(--primary); padding: 16px;
-            font-size: 16px; font-weight: 700; border-radius: 10px; cursor: pointer;
+            width: 100%; background: transparent; color: var(--dark); border: 2px solid var(--primary); padding: 15px;
+            font-size: 15px; font-weight: 700; border-radius: 10px; cursor: pointer;
             text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s;
             margin-top: 20px;
         }
@@ -84,7 +112,7 @@ calc_code = """
         /* Wynik */
         #result-section { 
             display: none; 
-            margin-top: 40px; 
+            margin-top: 30px; 
             padding-top: 20px; 
             border-top: 2px dashed #eee;
             animation: slideDown 0.5s ease-out;
@@ -92,30 +120,29 @@ calc_code = """
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         .price-box {
-            background: var(--dark); color: white; padding: 25px; border-radius: 12px;
-            text-align: center; margin-bottom: 25px;
+            background: var(--dark); color: white; padding: 20px; border-radius: 12px;
+            text-align: center; margin-bottom: 20px;
         }
-        .price-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-        .price-val { font-size: 32px; font-weight: 700; color: var(--primary); display: block; margin-top: 5px; }
+        .price-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
+        .price-val { font-size: 28px; font-weight: 700; color: var(--primary); display: block; margin-top: 5px; }
 
         /* Kontakt i Formularz */
         .contact-box {
-            text-align: center; margin-bottom: 25px; padding: 15px; border: 2px solid #000; border-radius: 10px;
-            font-weight: 700; font-size: 16px; text-transform: uppercase;
+            text-align: center; margin-bottom: 20px; padding: 15px; border: 2px solid #000; border-radius: 10px;
+            font-weight: 700; font-size: 15px; text-transform: uppercase;
         }
-        /* Styl dla linku generowanego przez JS */
-        .phone-link { color: var(--primary); text-decoration: none; display: block; font-size: 20px; margin-top: 5px; }
+        .phone-link { color: var(--primary); text-decoration: none; display: block; font-size: 18px; margin-top: 5px; }
 
-        .form-header { text-align: center; font-weight: 600; margin-bottom: 15px; font-size: 14px; color: #333; line-height: 1.5; }
+        .form-header { text-align: center; font-weight: 600; margin-bottom: 15px; font-size: 13px; color: #333; line-height: 1.4; }
 
         .btn-send {
             width: 100%; background: var(--primary); color: #000; border: none; padding: 16px;
             font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s; margin-top: 10px;
+            text-transform: uppercase; transition: 0.3s; margin-top: 5px;
             box-shadow: 0 4px 10px rgba(255, 194, 0, 0.3);
         }
         .btn-send:hover { background: #e0aa00; transform: translateY(-2px); }
-        .info-text { font-size: 11px; color: #999; margin-top: 10px; text-align: center; }
+        .info-text { font-size: 10px; color: #999; margin-top: 10px; text-align: center; }
         
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
@@ -247,12 +274,10 @@ calc_code = """
         
         <script>
             (function() {
-                // Numer podzielony na części
                 var p1 = "515";
                 var p2 = "478";
                 var p3 = "736";
                 var el = document.getElementById('secure-contact');
-                // Sklejenie i wstawienie linku
                 el.innerHTML = '<a href="tel:+48' + p1 + p2 + p3 + '" class="phone-link">' + p1 + ' ' + p2 + ' ' + p3 + '</a>';
             })();
         </script>
@@ -339,7 +364,7 @@ calc_code = """
         let useDrone = document.getElementById('drone').checked;
         let useTravel = document.getElementById('travel').checked;
 
-        // Dron: tylko przy Grafikach i Wideo
+        // Dron
         let droneBase = gfxTotal + vidTotal;
         let droneCost = 0;
         if (useDrone && droneBase > 0) {
@@ -350,7 +375,7 @@ calc_code = """
             }
         }
 
-        // Dojazd: tylko przy Social Media i Wideo
+        // Dojazd
         let travelBase = smPrice + vidTotal;
         let travelCost = 0;
         if (useTravel && travelBase > 0) {
@@ -371,7 +396,7 @@ calc_code = """
         document.getElementById('total-display').innerText = displayTotal;
         document.getElementById('hidden-total').value = displayTotal;
 
-        // Opis do formularza
+        // Opis
         let desc = [];
         if (smDesc !== "") desc.push(smDesc);
         if (gfxQty > 0) desc.push(`${gfxName} x${gfxQty}`);
