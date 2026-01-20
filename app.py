@@ -322,7 +322,7 @@ html_content = """
                 <span>Twoje wybory z kalkulatora zostaną automatycznie dołączone do zgłoszenia. Nie musisz ich przepisywać!</span>
             </div>
 
-            <form id="contactForm" action="https://formsubmit.co/eb22f98293c64af2624298419c9477ac" method="POST" target="_blank">
+            <form id="contactForm" action="https://formsubmit.co/kubafilip211@interia.pl" method="POST" target="_blank">
                 <input type="hidden" name="_subject" value="Leads: Born to Brand">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
