@@ -1,326 +1,273 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 1. Layout wide
-st.set_page_config(page_title="Kalkulator Born to Brand", layout="wide")
+# --- 1. KONFIGURACJA STRONY ---
+st.set_page_config(
+    page_title="Kalkulator Born to Brand",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-# 2. CSS Hack
+# --- 2. CSS FIX DLA STREAMLIT ---
 st.markdown("""
     <style>
-        .block-container {
-            padding-top: 1rem;
-            padding-bottom: 0rem;
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-        }
-        #MainMenu {visibility: hidden;}
+        .block-container { padding-top: 0rem; padding-bottom: 0rem; padding-left: 0rem; padding-right: 0rem; }
+        header {visibility: hidden;}
         footer {visibility: hidden;}
-        /* Ukrycie dodatkowych elementów Streamlit na mobile */
+        #MainMenu {visibility: hidden;}
         [data-testid="stToolbar"] {visibility: hidden;}
         .stDeployButton {display:none;}
+        iframe { width: 100%; min-height: 100vh; }
     </style>
 """, unsafe_allow_html=True)
 
-# Kod HTML/CSS/JS
-calc_code = """
+# --- 3. GŁÓWNY KOD HTML/JS/CSS ---
+html_content = """
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kalkulator Born to Brand</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ffc200; --dark: #1a1a1a; --light: #f8f9fa; --shadow: 0 10px 40px rgba(0,0,0,0.08); }
+        :root { 
+            --primary: #ffc200; 
+            --primary-hover: #e0aa00;
+            --dark: #1a1a1a; 
+            --light: #f8f9fa; 
+            --shadow: 0 8px 30px rgba(0,0,0,0.08); 
+            --radius: 16px;
+        }
 
-        /* Reset i ustawienia bazowe */
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
             font-family: 'Poppins', sans-serif; 
-            background: transparent; 
+            background: #fff; 
             color: var(--dark); 
-            margin: 0; 
-            padding: 0; 
-            overflow-x: hidden; /* Blokuje poziome przewijanie */
-            width: 100%;
+            margin: 0; padding: 20px 10px;
+            width: 100%; overflow-x: hidden;
         }
 
         .container { 
-            background: white; 
-            padding: 40px 25px; 
-            border-radius: 24px; 
-            box-shadow: var(--shadow); 
-            width: 100%; 
-            max-width: 650px; 
-            margin: auto; 
-            position: relative; 
-            padding-bottom: 50px; 
+            background: #fff; 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding-bottom: 60px;
         }
 
         h1 { 
-            text-align: center; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-            /* ZMIANA: Dodano margines górny, żeby nie ucinało napisu */
-            margin-top: 10px;
-            margin-bottom: 5px; 
-            font-size: 42px; 
-            line-height: 1.1; 
-            width: 100%;
+            text-align: center; font-weight: 800; text-transform: uppercase; 
+            margin: 10px 0 5px 0; font-size: 38px; line-height: 1.1; letter-spacing: -1px;
         }
         h1 span { color: var(--primary); }
-        
         .cennik-label { 
-            text-align: center; 
-            font-size: 14px; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-            margin-bottom: 35px; 
-            color: #888; 
-            letter-spacing: 3px;
-        }
-        
-        .subtitle { text-align: center; font-size: 15px; color: #444; margin-bottom: 25px; font-weight: 500; }
-
-        /* --- FIX NA TELEFONY --- */
-        @media (max-width: 600px) {
-            .container {
-                /* Zmniejszamy padding, żeby treść miała miejsce */
-                padding: 20px 10px; 
-                border-radius: 16px;
-                width: 100%;
-            }
-            h1 {
-                /* Zmniejszamy czcionkę, żeby się mieściła w jednej linii lub ładnie łamała */
-                font-size: 26px; 
-                margin-bottom: 5px;
-            }
-            .cennik-label {
-                font-size: 11px;
-                margin-bottom: 20px;
-                letter-spacing: 2px;
-            }
-            /* Zmniejszenie przycisków pakietów na bardzo wąskich ekranach */
-            .btn-preset {
-                padding: 10px 2px;
-            }
+            text-align: center; font-size: 13px; font-weight: 600; text-transform: uppercase; 
+            color: #999; letter-spacing: 4px; margin-bottom: 30px; 
         }
 
-        /* Sekcje */
-        .section-box { border: 1px solid #eee; border-radius: 12px; margin-bottom: 12px; overflow: hidden; transition: 0.3s; }
+        details { 
+            background: #fff; border: 1px solid #eee; border-radius: var(--radius); 
+            margin-bottom: 12px; overflow: hidden; transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        details[open] { border-color: var(--primary); box-shadow: 0 5px 15px rgba(255, 194, 0, 0.15); }
         
-        summary { padding: 18px; background: #fff; cursor: pointer; font-weight: 600; display: flex; justify-content: space-between; align-items: center; list-style: none; user-select: none; font-size: 15px; }
+        summary { 
+            padding: 20px; cursor: pointer; font-weight: 600; font-size: 16px;
+            display: flex; justify-content: space-between; align-items: center; list-style: none; 
+        }
         summary::-webkit-details-marker { display: none; }
-        summary::after { content: '+'; font-size: 20px; color: var(--primary); transition: 0.3s; }
-        
-        details[open] summary::after { transform: rotate(45deg); }
+        summary::after { content: '+'; font-size: 24px; color: var(--primary); font-weight: 300; }
+        details[open] summary::after { content: '-'; transform: rotate(0deg); }
         details[open] summary { border-bottom: 1px solid #f0f0f0; background: #fafafa; }
-        
-        details[open] .content { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
-        .content { padding: 20px; background: #fff; }
+        .content { padding: 20px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Pakiety */
-        .presets-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        
+        .presets-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .btn-preset {
-            background: #fff; border: 2px solid #eee; padding: 15px 5px; border-radius: 12px;
-            cursor: pointer; transition: 0.3s; text-align: center; position: relative;
+            background: #fff; border: 2px solid #eee; padding: 15px 10px; border-radius: 12px;
+            cursor: pointer; transition: 0.2s; text-align: center; position: relative;
         }
-        .btn-preset:hover { border-color: #ddd; background: #fafafa; }
-        .btn-preset.active { border-color: var(--primary); background: #fffdf5; box-shadow: 0 4px 12px rgba(255, 194, 0, 0.15); }
+        .btn-preset:hover { border-color: #ccc; }
+        .btn-preset.active { 
+            border-color: var(--primary); background: #fffdf5; 
+            box-shadow: 0 0 0 1px var(--primary) inset; 
+        }
+        .btn-preset strong { display: block; font-size: 14px; margin-bottom: 6px; text-transform: uppercase; }
+        .btn-preset ul { font-size: 11px; color: #666; padding: 0; margin: 0; list-style: none; line-height: 1.4; }
+        .btn-preset.full-width { grid-column: span 2; padding: 12px; }
+
+        label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px; color: #555; }
         
-        .btn-preset strong { display: block; font-size: 13px; margin-bottom: 5px; text-transform: uppercase; }
-        .btn-preset.full-width { grid-column: span 2; }
-
-        .preset-list { font-size: 10px; color: #555; line-height: 1.5; margin: 0; padding: 0; list-style: none; }
-        .preset-list li { border-bottom: 1px solid #f0f0f0; padding: 2px 0; }
-        .preset-list li:last-child { border-bottom: none; }
-
-        /* Inputy */
-        label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; }
-        input[type="number"], select, input[type="text"], input[type="email"], textarea {
-            width: 100%; padding: 14px; border: 2px solid #eee; border-radius: 10px; 
-            font-family: inherit; font-size: 14px; transition: 0.3s; box-sizing: border-box;
+        /* --- STYLE PÓL INPUT --- */
+        input[type="text"], input[type="number"], input[type="tel"], input[type="email"], select, textarea {
+            width: 100%; padding: 16px; border: 2px solid #eee; border-radius: 12px;
+            font-family: inherit; font-size: 15px; transition: 0.3s; 
+            appearance: none; 
+            background-color: #fff;
+            outline: none;
         }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; }
-        textarea { resize: vertical; min-height: 80px; }
-
-        /* Checkboxy */
-        .checkbox-group { display: flex; flex-direction: column; gap: 8px; margin-top: 25px; background: #fffdf5; padding: 20px; border-radius: 12px; border: 1px solid #ffeeba; }
-        .checkbox-row { display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 500; font-size: 14px; margin: 0; }
-        .checkbox-row input { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; flex-shrink: 0; }
-        .checkbox-hint { font-size: 11px; color: #999; margin-left: 32px; margin-bottom: 5px; line-height: 1.2; }
-
-        .hint-text { font-size: 12px; color: #666; margin-top: 15px; font-style: italic; line-height: 1.5; background: #f9f9f9; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
-
-        .custom-hint-box {
-            display: none;
-            font-size: 12px; color: #555; background: #fff3cd; 
-            padding: 15px; border-radius: 8px; margin-top: 15px; line-height: 1.5; border: 1px solid #ffeeba;
-        }
-
-        /* Lista dodanych */
-        .added-items-list { margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; }
-        .added-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: #f8f9fa; padding: 10px 15px; border-radius: 8px; margin-bottom: 8px; font-size: 13px;
-        }
-        .added-item .remove-btn { color: red; cursor: pointer; font-weight: bold; margin-left: 10px; font-size: 18px; }
         
-        .btn-add-item {
-            background: #333; color: #fff; border: none; padding: 12px; width: 100%;
-            border-radius: 10px; margin-top: 12px; cursor: pointer; font-size: 13px; text-transform: uppercase; font-weight: 600;
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--primary) !important; 
+            box-shadow: 0 0 0 3px rgba(255, 194, 0, 0.25) !important; 
         }
-        .btn-add-item:hover { background: #555; }
+        
+        input[type="checkbox"] {
+            width: 24px; 
+            height: 24px; 
+            accent-color: var(--primary); 
+            cursor: pointer; 
+            margin: 0;
+            appearance: auto; 
+            -webkit-appearance: checkbox; 
+        }
+
+        .btn-add {
+            background: #333; color: #fff; border: none; padding: 14px; width: 100%;
+            border-radius: 12px; margin-top: 15px; cursor: pointer; font-size: 13px; 
+            text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;
+        }
+        .btn-add:hover { background: #000; }
 
         .btn-calc {
-            width: 100%; background: transparent; color: var(--dark); border: 2px solid var(--primary); padding: 18px;
-            font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 0.5px; transition: 0.3s;
-            margin-top: 30px;
+            width: 100%; background: #fff; color: var(--dark); border: 3px solid var(--primary); 
+            padding: 20px; font-size: 18px; font-weight: 800; border-radius: 16px; cursor: pointer;
+            text-transform: uppercase; margin-top: 40px; transition: 0.2s;
+            box-shadow: 0 10px 20px rgba(255, 194, 0, 0.15);
         }
-        .btn-calc:hover { background: var(--primary); color: #000; }
+        .btn-calc:hover { background: var(--primary); color: #000; transform: translateY(-2px); }
 
-        #result-section { 
-            display: none; 
-            margin-top: 40px; 
-            padding-top: 30px; 
-            border-top: 2px dashed #eee;
-            animation: slideDown 0.5s ease-out;
-        }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-
+        #result-section { display: none; margin-top: 40px; border-top: 2px dashed #eee; padding-top: 40px; }
+        
         .price-box {
-            background: var(--dark); color: white; padding: 25px; border-radius: 16px;
-            text-align: center; margin-bottom: 25px;
+            background: var(--dark); color: #fff; padding: 30px 20px; border-radius: 20px;
+            text-align: center; margin-bottom: 30px; position: relative; overflow: hidden;
         }
-        .price-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; }
-        .price-val { font-size: 28px; font-weight: 700; color: var(--primary); display: block; margin-top: 5px; line-height: 1.2; }
-
-        .contact-box {
-            text-align: center; margin-bottom: 25px; padding: 20px; border: 2px solid #000; border-radius: 12px;
-            font-weight: 700; font-size: 16px; text-transform: uppercase;
+        .price-box::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,194,0,0.1) 0%, rgba(0,0,0,0) 70%);
         }
-        .phone-link { color: var(--primary); text-decoration: none; display: block; font-size: 20px; margin-top: 5px; }
+        .price-label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.7; }
+        .price-val { font-size: 36px; font-weight: 700; color: var(--primary); display: block; margin-top: 10px; }
 
-        .form-header { text-align: center; font-weight: 600; margin-bottom: 15px; font-size: 14px; color: #333; line-height: 1.5; }
-
+        .form-box { background: #f9f9f9; padding: 25px; border-radius: 16px; }
         .btn-send {
             width: 100%; background: var(--primary); color: #000; border: none; padding: 18px;
-            font-size: 16px; font-weight: 700; border-radius: 10px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s; margin-top: 10px;
-            box-shadow: 0 4px 10px rgba(255, 194, 0, 0.3);
+            font-size: 16px; font-weight: 700; border-radius: 12px; cursor: pointer;
+            text-transform: uppercase; margin-top: 15px; box-shadow: 0 4px 15px rgba(255, 194, 0, 0.4);
         }
-        .btn-send:hover { background: #e0aa00; transform: translateY(-2px); }
-        .info-text { font-size: 11px; color: #999; margin-top: 15px; text-align: center; }
+        .btn-send:hover { background: var(--primary-hover); }
+
+        .added-item { 
+            display: flex; justify-content: space-between; align-items: center;
+            background: #fff; border: 1px solid #eee; padding: 12px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; 
+        }
+        .remove-btn { color: #ff4444; font-weight: bold; cursor: pointer; padding: 0 10px; font-size: 20px; }
+
+        .checkbox-group { background: #fffdf5; padding: 20px; border-radius: 16px; border: 1px solid #ffeeba; margin-top: 20px; }
+        .checkbox-row { display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 10px; }
+        .checkbox-row span { cursor: pointer; }
         
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .custom-hint { display: none; background: #fff8e1; color: #664d03; padding: 12px; font-size: 12px; border-radius: 8px; margin-top: 10px; border: 1px solid #ffecb5; }
+        
+        .info-desc { font-size: 12px; color: #666; margin-top: 20px; line-height: 1.5; border-top: 1px solid #eee; padding-top: 15px; }
+
+        .auto-attach-info {
+            font-size: 12px; 
+            background: #e9f7ef; 
+            color: #1e8449; 
+            padding: 10px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            border: 1px solid #c3e6cb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>Born to <span>Brand</span></h1>
-    <div class="cennik-label">Cennik usług</div>
-    <div class="subtitle">Co potrzebujesz?</div>
+    <div class="cennik-label">Kalkulator Wyceny</div>
 
     <input type="hidden" id="sm_price_val" value="0">
     <input type="hidden" id="sm_desc" value="">
 
-    <details class="section-box">
+    <details>
         <summary>Prowadzenie Social Media</summary>
         <div class="content">
-            <div class="presets-container">
+            <div class="presets-grid">
                 <div class="btn-preset" onclick="selectPackage(this, 400, 'Minimum', '2 Rolki, 2 Grafiki, 2 Relacje')">
-                    <strong>Pakiet Minimum</strong>
-                    <ul class="preset-list">
-                        <li>2x Rolki (Reels)</li>
-                        <li>2x Grafiki</li>
-                        <li>2x Relacje (Stories)</li>
-                    </ul>
+                    <strong>Minimum</strong>
+                    <ul><li>2x Rolki</li><li>2x Grafiki</li><li>2x Relacje</li></ul>
                 </div>
                 <div class="btn-preset" onclick="selectPackage(this, 1000, 'Niski', '4 Rolki, 4 Grafiki, 4 Relacje')">
-                    <strong>Pakiet Niski</strong>
-                    <ul class="preset-list">
-                        <li>4x Rolki (Reels)</li>
-                        <li>4x Grafiki</li>
-                        <li>4x Relacje (Stories)</li>
-                    </ul>
+                    <strong>Niski</strong>
+                    <ul><li>4x Rolki</li><li>4x Grafiki</li><li>4x Relacje</li></ul>
                 </div>
                 <div class="btn-preset" onclick="selectPackage(this, 1500, 'Polecany', '8 Rolek, 4 Grafiki, 8 Relacji')">
-                    <strong>Pakiet Polecany</strong>
-                    <ul class="preset-list">
-                        <li>8x Rolek (Reels)</li>
-                        <li>4x Grafiki</li>
-                        <li>8x Relacji (Stories)</li>
-                    </ul>
+                    <strong>Polecany</strong>
+                    <ul><li>8x Rolki</li><li>4x Grafiki</li><li>8x Relacje</li></ul>
                 </div>
                 <div class="btn-preset" onclick="selectPackage(this, 2000, 'Wysoki', '10 Rolek, 8 Grafik, 10 Relacji')">
-                    <strong>Pakiet Wysoki</strong>
-                    <ul class="preset-list">
-                        <li>10x Rolek (Reels)</li>
-                        <li>8x Grafik</li>
-                        <li>10x Relacji (Stories)</li>
-                    </ul>
+                    <strong>Wysoki</strong>
+                    <ul><li>10x Rolki</li><li>8x Grafiki</li><li>10x Relacje</li></ul>
                 </div>
                 <div class="btn-preset full-width" onclick="selectPackage(this, 0, 'INNE', 'Wycena indywidualna')">
-                    <strong>INNE</strong>
+                    <strong>Inne / Wycena Indywidualna</strong>
                 </div>
             </div>
+            
+            <div id="sm-hint" class="custom-hint">Zaznacz tę opcję, a na dole strony w formularzu opisz swoje potrzeby. Wycenimy to indywidualnie!</div>
 
-            <div id="sm-custom-hint" class="custom-hint-box">
-                Twoje oczekiwania nie spełnia żaden z pakietów? Zaznacz tę opcję, na dole strony kliknij <b>OBLICZ SZACUNKOWY KOSZT</b> oraz w formularzu napisz co oczekujesz, a my odeślemy wycenę na maila i smsem!
-            </div>
-
-            <div class="hint-text">
+            <div class="info-desc">
                 W cenie miesięcznego pakietu: prowadzimy Twoje social media od A do Z. W tym: wykorzystujemy profesjonalny sprzęt foto/wideo, jesteśmy w stałym kontakcie ze zleceniodawcą, przygotowujemy comiesięczne raporty z wynikami, odpisujemy na komentarze i wiadomości.
             </div>
         </div>
     </details>
 
-    <details class="section-box">
+    <details>
         <summary>Projektowanie Graficzne</summary>
         <div class="content">
-            <label>Dodaj pozycję do wyceny:</label>
-            <select id="gfx_type" onchange="checkGfxOther()">
-                <option value="0">Wybierz...</option>
+            <label>Rodzaj projektu:</label>
+            <select id="gfx_type" onchange="toggleGfxHint()">
+                <option value="0">-- Wybierz --</option>
                 <option value="150">Baner</option>
                 <option value="150">Ulotka</option>
                 <option value="100">Wizytówka</option>
                 <option value="100">Grafika Social Media</option>
                 <option value="0">Inne</option>
             </select>
-
-            <div id="gfx-custom-hint" class="custom-hint-box">
-                Twoje oczekiwania nie spełnia żaden z podpunktów? Zaznacz tę opcję, na dole strony kliknij <b>OBLICZ SZACUNKOWY KOSZT</b> oraz w formularzu napisz co oczekujesz, a my odeślemy wycenę na maila i smsem!
-            </div>
-
-            <label style="margin-top:10px">Ilość sztuk</label>
-            <input type="number" id="gfx_qty" min="0" placeholder="0" oninput="validity.valid||(value='');">
             
-            <button class="btn-add-item" onclick="addGfxItem()">+ Dodaj kolejną pozycję</button>
+            <div id="gfx-hint" class="custom-hint">Wybierz tę opcję dla nietypowych zleceń i opisz je w formularzu końcowym.</div>
 
-            <div id="gfx-list" class="added-items-list" style="display:none;"></div>
+            <label style="margin-top:15px">Ilość sztuk:</label>
+            <input type="number" id="gfx_qty" placeholder="np. 1" min="1">
+
+            <button class="btn-add" onclick="addItem('gfx')">+ Dodaj do wyceny</button>
             
-            <label class="checkbox-row" style="margin-top:15px; border-top: 1px dashed #eee; padding-top:10px;">
-                <input type="checkbox" id="gfx_print">
+            <div id="gfx-list" style="margin-top:15px"></div>
+
+            <label class="checkbox-row" style="margin-top:20px; font-size:14px;">
+                <input type="checkbox" id="gfx_print"> 
                 <span>Zlecam również druk</span>
             </label>
         </div>
     </details>
 
-    <details class="section-box">
+    <details>
         <summary>Tworzenie Filmów</summary>
         <div class="content">
-            <label>Dodaj pozycję do wyceny:</label>
-            <select id="vid_type" onchange="checkVidOther()">
-                <option value="0">Wybierz...</option>
+            <label>Rodzaj wideo:</label>
+            <select id="vid_type" onchange="toggleVidHint()">
+                <option value="0">-- Wybierz --</option>
                 <option value="200">Rolka do 30s</option>
                 <option value="350">Rolka 30s-60s</option>
                 <option value="450">Film 1-2 min</option>
@@ -328,18 +275,15 @@ calc_code = """
                 <option value="0">Inne</option>
             </select>
 
-            <div id="vid-custom-hint" class="custom-hint-box">
-                Twoje oczekiwania nie spełnia żaden z podpunktów? Zaznacz tę opcję, na dole strony kliknij <b>OBLICZ SZACUNKOWY KOSZT</b> oraz w formularzu napisz co oczekujesz, a my odeślemy wycenę na maila i smsem!
-            </div>
+            <div id="vid-hint" class="custom-hint">Opisz niestandardowe wideo w formularzu na dole.</div>
 
-            <label style="margin-top:10px">Ilość filmów</label>
-            <input type="number" id="vid_qty" min="0" placeholder="0" oninput="validity.valid||(value='');">
-            
-            <button class="btn-add-item" onclick="addVidItem()">+ Dodaj kolejną pozycję</button>
+            <label style="margin-top:15px">Ilość filmów:</label>
+            <input type="number" id="vid_qty" placeholder="np. 1" min="1">
 
-            <div id="vid-list" class="added-items-list" style="display:none;"></div>
+            <button class="btn-add" onclick="addItem('vid')">+ Dodaj do wyceny</button>
+            <div id="vid-list" style="margin-top:15px"></div>
             
-            <div class="hint-text">
+            <div style="font-size: 12px; color: #666; margin-top: 15px; font-style: italic;">
                 * Cena obejmuje nagranie wideo oraz profesjonalny montaż.
             </div>
         </div>
@@ -347,356 +291,255 @@ calc_code = """
 
     <div class="checkbox-group">
         <label class="checkbox-row">
-            <input type="checkbox" id="drone"> 
-            <span>Ujęcie z drona</span>
+            <input type="checkbox" id="drone">
+            <span>Ujęcia z drona</span>
         </label>
-        
-        <label class="checkbox-row" style="margin-top:10px">
-            <input type="checkbox" id="travel"> 
-            <span>Zlecenie powyżej 60 km od Oświęcimia</span>
+        <label class="checkbox-row">
+            <input type="checkbox" id="travel">
+            <span>Dojazd do klienta (>60km od Oświęcimia)</span>
         </label>
-        <div class="checkbox-hint">(dotyczy to realizacji na miejscu u klienta)</div>
     </div>
 
-    <button class="btn-calc" onclick="showCalculation()">Oblicz szacunkowy koszt</button>
+    <button class="btn-calc" onclick="calculate()">Oblicz szacunkowy koszt</button>
 
     <div id="result-section">
-
         <div class="price-box">
-            <span class="price-label">Szacowana kwota zlecenia</span>
+            <div class="price-label">Szacowany koszt</div>
             <span class="price-val" id="total-display">0 zł</span>
         </div>
 
-        <div class="contact-box">
-            Masz pytania? Zadzwoń!
-            <span id="secure-contact"></span>
-        </div>
-        
-        <script>
-            (function() {
-                var p1 = "515";
-                var p2 = "478";
-                var p3 = "736";
-                var el = document.getElementById('secure-contact');
-                el.innerHTML = '<a href="tel:+48' + p1 + p2 + p3 + '" class="phone-link">' + p1 + ' ' + p2 + ' ' + p3 + '</a>';
-            })();
-        </script>
+        <div class="form-box">
+            <div style="text-align:center; margin-bottom:15px; font-size:13px; font-style:italic; color:#555;">
+                Jesteśmy elastyczni, dopasujemy usługę pod Twoje potrzeby!
+            </div>
 
-        <div class="form-header">
-            Wyślij zapytanie, a odezwiemy się do Ciebie jak najszybciej SMS-em oraz mailem.
-        </div>
-
-        <form action="https://formsubmit.co/eb22f98293c64af2624298419c9477ac" method="POST" target="_blank">
-            <input type="hidden" name="_subject" value="Nowe Zapytanie - Born to Brand">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_template" value="table">
+            <div style="text-align:center; margin-bottom:20px; font-weight:600; line-height:1.4;">
+                Wyślij zapytanie, a odezwiemy się do Ciebie jak najszybciej SMS-em oraz mailem.
+            </div>
             
-            <input type="hidden" name="Szczegóły_Zlecenia" id="hidden-details">
-            <input type="hidden" name="Szacowana_Kwota" id="hidden-total">
+            <div class="auto-attach-info">
+                <span>✅</span>
+                <span>Twoje wybory z kalkulatora zostaną automatycznie dołączone do zgłoszenia. Nie musisz ich przepisywać!</span>
+            </div>
 
-            <div style="margin-bottom:10px"><input type="text" name="Klient" placeholder="Imię i Nazwisko / Firma" required></div>
-            <div style="margin-bottom:10px"><input type="text" name="Telefon" placeholder="Telefon" required></div>
-            <div style="margin-bottom:10px"><input type="email" name="Email" placeholder="E-mail" required></div>
-            <div style="margin-bottom:15px"><textarea name="Wiadomosc" placeholder="Dodatkowe pytania / spostrzeżenia..."></textarea></div>
+            <form id="contactForm" action="https://formsubmit.co/eb22f98293c64af2624298419c9477ac" method="POST" target="_blank">
+                <input type="hidden" name="_subject" value="Leads: Born to Brand">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                
+                <input type="hidden" name="Szczegóły" id="hidden-details">
+                <input type="hidden" name="Kwota" id="hidden-total">
 
-            <button type="submit" class="btn-send">Wyślij Zapytanie</button>
-            <p class="info-text">Kliknięcie otworzy potwierdzenie w nowej karcie.</p>
-        </form>
+                <div style="margin-bottom:12px">
+                    <input type="text" name="Klient" placeholder="Imię / Firma" required>
+                </div>
+                
+                <div style="margin-bottom:12px">
+                    <input type="tel" id="contact-phone" name="Telefon" placeholder="Telefon (tylko cyfry)" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                </div>
+                
+                <div style="margin-bottom:12px">
+                    <input type="email" id="contact-email" name="Email" placeholder="E-mail">
+                </div>
+                
+                <div style="margin-bottom:12px">
+                    <textarea name="Wiadomosc" placeholder="Dodatkowe informacje..." rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="btn-send">Wyślij Zapytanie</button>
+            </form>
+            <div style="text-align:center; margin-top:15px; font-size:14px; font-weight:600;">
+                lub zadzwoń: <a href="tel:+48515478736" style="color:var(--primary-hover); text-decoration:none;">515 478 736</a>
+            </div>
+        </div>
     </div>
-
 </div>
 
 <script>
-    // --- VARIABLES TO STORE MULTI-SELECT ITEMS ---
-    let graphicsList = [];
-    let videoList = [];
+    let cart = { gfx: [], vid: [] };
 
-    function resizeStreamlit() {
-        const height = document.body.scrollHeight;
-        const frame = window.frameElement;
-        if (frame) { frame.style.height = height + 'px'; }
-    }
-    new ResizeObserver(resizeStreamlit).observe(document.body);
-
-    // --- SOCIAL MEDIA LOGIC (Toggle functionality) ---
-    function selectPackage(element, price, name, details) {
-        // Sprawdź czy ten element jest już aktywny
-        if (element.classList.contains('active')) {
-            // ODZNACZ (Deselect)
-            element.classList.remove('active');
+    function selectPackage(el, price, name, details) {
+        let isActive = el.classList.contains('active');
+        document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+        
+        if (!isActive) {
+            el.classList.add('active');
+            document.getElementById('sm_price_val').value = price;
+            document.getElementById('sm_desc').value = (name === 'INNE') ? 'Social: Wycena Indywidualna' : `Social: ${name}`;
+            document.getElementById('sm-hint').style.display = (name === 'INNE') ? 'block' : 'none';
+        } else {
             document.getElementById('sm_price_val').value = 0;
             document.getElementById('sm_desc').value = "";
-            document.getElementById('sm-custom-hint').style.display = 'none';
-        } else {
-            // ZAZNACZ (Select new)
-            // Najpierw usuń klasę active ze wszystkich
-            document.querySelectorAll('.btn-preset').forEach(el => el.classList.remove('active'));
-            
-            // Dodaj do klikniętego
-            element.classList.add('active');
-            document.getElementById('sm_price_val').value = price;
-            
-            // Obsługa INNE
-            let hintBox = document.getElementById('sm-custom-hint');
-            if (name === 'INNE') {
-                 document.getElementById('sm_desc').value = "Social Media: Wycena Indywidualna (INNE)";
-                 hintBox.style.display = 'block';
-            } else {
-                 document.getElementById('sm_desc').value = `Pakiet ${name} (${details})`;
-                 hintBox.style.display = 'none';
-            }
+            document.getElementById('sm-hint').style.display = 'none';
         }
-        resizeStreamlit();
     }
 
-    // --- GRAPHICS LOGIC ---
-    function checkGfxOther() {
-        let sel = document.getElementById('gfx_type');
-        let text = sel.options[sel.selectedIndex].text;
-        let hint = document.getElementById('gfx-custom-hint');
+    function toggleGfxHint() {
+        let txt = document.getElementById('gfx_type').selectedOptions[0].text;
+        document.getElementById('gfx-hint').style.display = (txt === 'Inne') ? 'block' : 'none';
+    }
+    function toggleVidHint() {
+        let txt = document.getElementById('vid_type').selectedOptions[0].text;
+        document.getElementById('vid-hint').style.display = (txt === 'Inne') ? 'block' : 'none';
+    }
+
+    function addItem(type) {
+        let select = document.getElementById(type + '_type');
+        let qtyInput = document.getElementById(type + '_qty');
         
-        if (text === "Inne") {
-            hint.style.display = 'block';
-        } else {
-            hint.style.display = 'none';
-        }
-        resizeStreamlit();
-    }
-
-    function addGfxItem() {
-        let sel = document.getElementById('gfx_type');
-        let qtyInput = document.getElementById('gfx_qty');
-        let price = parseFloat(sel.value);
-        let name = sel.options[sel.selectedIndex].text;
+        let price = parseFloat(select.value);
+        let name = select.selectedOptions[0].text;
         let qty = parseInt(qtyInput.value);
 
-        if (sel.value === "0" && name !== "Inne") {
-            alert("Wybierz rodzaj projektu!"); 
-            return;
-        }
-        if ((!qty || qty <= 0) && name !== "Inne") {
-            alert("Podaj ilość!"); 
-            return;
-        }
-        if (name === "Inne") qty = 1;
+        if (name === '-- Wybierz --') return alert('Wybierz rodzaj usługi!');
+        if (name !== 'Inne' && (!qty || qty < 1)) return alert('Podaj ilość!');
+        if (name === 'Inne') qty = 1; 
 
-        graphicsList.push({ name: name, price: price, qty: qty, isOther: (name === "Inne") });
-        
-        // Reset
-        sel.value = "0";
+        cart[type].push({ name, price, qty, isOther: (name === 'Inne') });
+
+        select.value = "0";
         qtyInput.value = "";
-        checkGfxOther(); 
-        renderList('gfx');
-    }
-
-    // --- VIDEO LOGIC ---
-    function checkVidOther() {
-        let sel = document.getElementById('vid_type');
-        let text = sel.options[sel.selectedIndex].text;
-        let hint = document.getElementById('vid-custom-hint');
-        
-        if (text === "Inne") {
-            hint.style.display = 'block';
-        } else {
-            hint.style.display = 'none';
-        }
-        resizeStreamlit();
-    }
-
-    function addVidItem() {
-        let sel = document.getElementById('vid_type');
-        let qtyInput = document.getElementById('vid_qty');
-        let price = parseFloat(sel.value);
-        let name = sel.options[sel.selectedIndex].text;
-        let qty = parseInt(qtyInput.value);
-
-        if (sel.value === "0" && name !== "Inne") {
-             alert("Wybierz rodzaj filmu!"); 
-             return;
-        }
-        if ((!qty || qty <= 0) && name !== "Inne") {
-             alert("Podaj ilość!"); 
-             return;
-        }
-        if (name === "Inne") qty = 1;
-
-        videoList.push({ name: name, price: price, qty: qty, isOther: (name === "Inne") });
-        
-        // Reset
-        sel.value = "0";
-        qtyInput.value = "";
-        checkVidOther();
-        renderList('vid');
+        renderList(type);
+        if(type === 'gfx') toggleGfxHint();
+        if(type === 'vid') toggleVidHint();
     }
 
     function removeItem(type, index) {
-        if (type === 'gfx') graphicsList.splice(index, 1);
-        if (type === 'vid') videoList.splice(index, 1);
+        cart[type].splice(index, 1);
         renderList(type);
     }
 
     function renderList(type) {
-        let listArr = (type === 'gfx') ? graphicsList : videoList;
         let container = document.getElementById(type + '-list');
+        container.innerHTML = '';
         
-        if (listArr.length === 0) {
-            container.style.display = 'none';
-            container.innerHTML = '';
-        } else {
-            container.style.display = 'block';
-            let html = "";
-            listArr.forEach((item, index) => {
-                let desc = item.isOther ? "Inne (Wycena Indywidualna)" : `${item.name} x${item.qty}`;
-                html += `<div class="added-item">
-                            <span>${desc}</span>
-                            <span class="remove-btn" onclick="removeItem('${type}', ${index})">&times;</span>
-                         </div>`;
-            });
-            container.innerHTML = html;
-        }
-        resizeStreamlit();
+        cart[type].forEach((item, idx) => {
+            let div = document.createElement('div');
+            div.className = 'added-item';
+            div.innerHTML = `
+                <span>${item.isOther ? 'Inne (do wyceny)' : item.name + ' x' + item.qty}</span>
+                <span class="remove-btn" onclick="removeItem('${type}', ${idx})">&times;</span>
+            `;
+            container.appendChild(div);
+        });
     }
 
-    // --- CALCULATION LOGIC ---
-    function showCalculation() {
-        calculateLogic();
-        document.getElementById('result-section').style.display = 'block';
-        document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
-        resizeStreamlit();
-    }
+    function calculate() {
+        let total = 0;
+        let detailsArr = [];
+        let isCustom = false;
 
-    function calculateLogic() {
-        // SOCIAL MEDIA
-        let smPrice = parseInt(document.getElementById('sm_price_val').value) || 0;
+        // 1. Social Media
+        let smPrice = parseFloat(document.getElementById('sm_price_val').value) || 0;
         let smDesc = document.getElementById('sm_desc').value;
-        let isSmCustom = smDesc.includes("INNE");
+        if (smPrice > 0) total += smPrice;
+        if (smDesc) detailsArr.push(smDesc);
+        if (smDesc.includes('Indywidualna')) isCustom = true;
 
-        // GRAFIKA: SUMA LISTY
-        let gfxTotal = 0;
-        let isGfxCustom = false;
-        let gfxDescArr = [];
-        
-        graphicsList.forEach(item => {
-            if (item.isOther) {
-                isGfxCustom = true;
-                gfxDescArr.push("Grafika: INNE");
+        // 2. Grafika
+        cart.gfx.forEach(i => {
+            if (i.isOther) {
+                isCustom = true;
+                detailsArr.push('Grafika: INNE');
             } else {
-                let itemTotal = item.price * item.qty;
-                if (item.qty > 1) itemTotal *= 0.9; 
-                gfxTotal += itemTotal;
-                gfxDescArr.push(`${item.name} x${item.qty}`);
+                let cost = i.price * i.qty;
+                if (i.qty > 1) cost *= 0.9; 
+                total += cost;
+                detailsArr.push(`Grafika: ${i.name} x${i.qty}`);
             }
         });
 
-        // GRAFIKA: SPRAWDZENIE AKTUALNIE WYBRANEGO (nie dodanego do listy)
-        let pendingGfxVal = parseFloat(document.getElementById('gfx_type').value) || 0;
-        let pendingGfxName = document.getElementById('gfx_type').options[document.getElementById('gfx_type').selectedIndex].text;
-        let pendingGfxQty = parseInt(document.getElementById('gfx_qty').value) || 0;
-
-        if (pendingGfxName === "Inne") {
-             isGfxCustom = true;
-             gfxDescArr.push("Grafika: INNE (zaznaczone)");
-        } else if (pendingGfxVal > 0 && pendingGfxQty > 0) {
-             let itemTotal = pendingGfxVal * pendingGfxQty;
-             if (pendingGfxQty > 1) itemTotal *= 0.9;
-             gfxTotal += itemTotal;
-             gfxDescArr.push(`${pendingGfxName} x${pendingGfxQty} (zaznaczone)`);
-        }
-
-        // WIDEO: SUMA LISTY
-        let vidTotal = 0;
-        let isVidCustom = false;
-        let vidDescArr = [];
-        videoList.forEach(item => {
-            if (item.isOther) {
-                isVidCustom = true;
-                vidDescArr.push("Wideo: INNE");
+        // 3. Wideo
+        cart.vid.forEach(i => {
+            if (i.isOther) {
+                isCustom = true;
+                detailsArr.push('Wideo: INNE');
             } else {
-                let itemTotal = item.price * item.qty;
-                if (item.qty > 1) itemTotal *= 0.9; // RABAT 10%
-                vidTotal += itemTotal;
-                vidDescArr.push(`${item.name} x${item.qty}`);
+                let cost = i.price * i.qty;
+                if (i.qty > 1) cost *= 0.9; 
+                total += cost;
+                detailsArr.push(`Wideo: ${i.name} x${i.qty}`);
             }
         });
 
-        // WIDEO: SPRAWDZENIE AKTUALNIE WYBRANEGO (nie dodanego do listy)
-        let pendingVidVal = parseFloat(document.getElementById('vid_type').value) || 0;
-        let pendingVidName = document.getElementById('vid_type').options[document.getElementById('vid_type').selectedIndex].text;
-        let pendingVidQty = parseInt(document.getElementById('vid_qty').value) || 0;
+        // 4. Dodatki
+        let drone = document.getElementById('drone').checked;
+        let travel = document.getElementById('travel').checked;
+        let print = document.getElementById('gfx_print').checked;
 
-        if (pendingVidName === "Inne") {
-             isVidCustom = true;
-             vidDescArr.push("Wideo: INNE (zaznaczone)");
-        } else if (pendingVidVal > 0 && pendingVidQty > 0) {
-             let itemTotal = pendingVidVal * pendingVidQty;
-             if (pendingVidQty > 1) itemTotal *= 0.9; // RABAT 10%
-             vidTotal += itemTotal;
-             vidDescArr.push(`${pendingVidName} x${pendingVidQty} (zaznaczone)`);
+        if (drone) {
+            let base = total; 
+            let droneCost = (base <= 1000) ? base * 0.2 : 200;
+            if (base > 0) total += droneCost;
+            detailsArr.push('Dron: TAK');
         }
 
-        // DODATKI
-        let useDrone = document.getElementById('drone').checked;
-        let useTravel = document.getElementById('travel').checked;
-        let usePrint = document.getElementById('gfx_print').checked; 
-
-        // Dron
-        let droneBase = gfxTotal + vidTotal;
-        let droneCost = 0;
-        if (useDrone && droneBase > 0) {
-            if (droneBase <= 1000) {
-                droneCost = droneBase * 0.20;
-            } else {
-                droneCost = 200;
-            }
+        if (travel) {
+            let travelCost = total * 0.15;
+            if (total > 0) total += travelCost;
+            detailsArr.push('Dojazd: TAK');
         }
 
-        // Dojazd
-        let travelBase = smPrice + vidTotal;
-        let travelCost = 0;
-        if (useTravel && travelBase > 0) {
-            travelCost = travelBase * 0.15; 
-        }
+        if (print) detailsArr.push('Druk: TAK (do wyceny)');
 
-        let total = Math.round(smPrice + gfxTotal + vidTotal + droneCost + travelCost);
-        let displayTotal = total + " zł";
+        // Finalizacja
+        total = Math.round(total);
+        let displayTxt = total + " zł";
         
-        // Logika wyświetlania "Wycena Indywidualna"
-        let forceCustom = false;
-        if (isSmCustom) forceCustom = true;
-        if (isGfxCustom) forceCustom = true;
-        if (isVidCustom) forceCustom = true;
+        if (isCustom) displayTxt += " + Wycena";
+        if (total === 0 && isCustom) displayTxt = "Wycena Indywidualna";
+        if (print) displayTxt += " + Druk";
 
-        if (forceCustom) {
-            if (total > 0) {
-                 displayTotal = total + " zł + Wycena Indywidualna";
-            } else {
-                 displayTotal = "Wycena Indywidualna";
-            }
+        if (total === 0 && !isCustom && !print) displayTxt = "0 zł";
+
+        document.getElementById('total-display').innerText = displayTxt;
+        document.getElementById('hidden-total').value = displayTxt;
+        document.getElementById('hidden-details').value = detailsArr.join(" | ");
+
+        let resSec = document.getElementById('result-section');
+        if (total > 0 || isCustom || print) {
+            resSec.style.display = 'block';
+            resSec.scrollIntoView({behavior: 'smooth'});
         }
-        
-        if (usePrint) {
-            displayTotal += " + Druk (napisz w formularzu poniżej szczegóły)";
-        }
-
-        document.getElementById('total-display').innerText = displayTotal;
-        document.getElementById('hidden-total').value = displayTotal;
-
-        // Opis do formularza
-        let desc = [];
-        if (smDesc !== "") desc.push(smDesc);
-        if (gfxDescArr.length > 0) desc.push("GRAFIKA: " + gfxDescArr.join(", "));
-        if (usePrint) desc.push("+ DRUK (do wyceny)");
-        if (vidDescArr.length > 0) desc.push("WIDEO: " + vidDescArr.join(", "));
-        
-        if (useDrone) desc.push("+ Dron");
-        if (useTravel) desc.push("+ Dojazd");
-        
-        document.getElementById('hidden-details').value = desc.join(" | ");
     }
+
+    // --- NOWA LOGIKA WALIDACJI FORMULARZA ---
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        var phone = document.getElementById('contact-phone').value;
+        var email = document.getElementById('contact-email').value;
+
+        // 1. Sprawdź czy podano cokolwiek (Telefon LUB Email)
+        if (!phone && !email) {
+            e.preventDefault();
+            alert('Podaj numer telefonu LUB adres e-mail, abyśmy mogli się z Tobą skontaktować.');
+            return;
+        }
+
+        // 2. Walidacja telefonu (jeśli wpisany)
+        if (phone) {
+            if (phone.length < 9) {
+                e.preventDefault();
+                alert('Numer telefonu jest za krótki. Wpisz co najmniej 9 cyfr.');
+                return;
+            }
+            // (Blokada liter jest już zrobiona przez oninput w HTML)
+        }
+
+        // 3. Walidacja e-maila (jeśli wpisany) - prosty regex dla pewności
+        if (email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!re.test(email)) {
+                e.preventDefault();
+                alert('Podany adres e-mail wygląda na nieprawidłowy.');
+                return;
+            }
+        }
+    });
+
 </script>
 
 </body>
 </html>
 """
 
-components.html(calc_code, height=1600, scrolling=False)
+components.html(html_content, height=2300, scrolling=True)
