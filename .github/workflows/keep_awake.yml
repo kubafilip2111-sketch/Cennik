@@ -1,0 +1,17 @@
+name: Budzik Aplikacji
+
+on:
+  schedule:
+    # Uruchamiaj co 30 minut
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Pozwala też uruchomić ręcznie przyciskiem
+
+jobs:
+  ping_app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sprawdzam czy działa
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" https://twoja-nazwa-aplikacji.streamlit.app/
+          # Dodajemy User-Agent, żeby udawać przeglądarkę
+          curl -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" https://kalkulator-borntobrand.streamlit.app
