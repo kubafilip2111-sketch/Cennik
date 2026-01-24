@@ -11,18 +11,32 @@ st.set_page_config(
 )
 
 # --- 2. ZAPOBIEGANIE USYPIANIU ---
-# Odświeża aplikację w tle co 5 minut
 st_autorefresh(interval=300000, key="data_refresh_key")
 
-# --- 3. CSS FIX DLA STREAMLIT (POPRAWIONY) ---
-# Usunąłem linijkę z "iframe", która robiła czarną dziurę na górze
+# --- 3. WYMUSZENIE BIAŁEGO TŁA I USUNIĘCIE PASKÓW (Poprawka) ---
 st.markdown("""
     <style>
-        .block-container { padding-top: 0rem; padding-bottom: 0rem; padding-left: 0rem; padding-right: 0rem; }
-        header {visibility: hidden;}
+        /* Wymusza białe tło na całej stronie Streamlit */
+        .stApp {
+            background-color: #ffffff;
+        }
+        
+        /* Ukrywa domyślny górny pasek Streamlit (ten z burgerem menu) */
+        header[data-testid="stHeader"] {
+            display: none;
+        }
+
+        /* Usuwa marginesy, żeby aplikacja była na cały ekran */
+        .block-container {
+            padding-top: 0rem;
+            padding-bottom: 0rem;
+            padding-left: 0rem;
+            padding-right: 0rem;
+            max-width: 100%;
+        }
+        
+        /* Ukrywa stopkę i inne elementy */
         footer {visibility: hidden;}
-        #MainMenu {visibility: hidden;}
-        [data-testid="stToolbar"] {visibility: hidden;}
         .stDeployButton {display:none;}
     </style>
 """, unsafe_allow_html=True)
@@ -47,9 +61,11 @@ html_content = """
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        /* Tło body też na białe, dla pewności */
         body { 
             font-family: 'Poppins', sans-serif; 
-            background: #fff; 
+            background: #ffffff; 
             color: var(--dark); 
             margin: 0; padding: 20px 10px;
             width: 100%; overflow-x: hidden;
@@ -107,7 +123,6 @@ html_content = """
 
         label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 13px; color: #555; }
         
-        /* --- STYLE PÓL INPUT --- */
         input[type="text"], input[type="number"], input[type="tel"], input[type="email"], select, textarea {
             width: 100%; padding: 16px; border: 2px solid #eee; border-radius: 12px;
             font-family: inherit; font-size: 15px; transition: 0.3s; 
@@ -122,13 +137,8 @@ html_content = """
         }
         
         input[type="checkbox"] {
-            width: 24px; 
-            height: 24px; 
-            accent-color: var(--primary); 
-            cursor: pointer; 
-            margin: 0;
-            appearance: auto; 
-            -webkit-appearance: checkbox; 
+            width: 24px; height: 24px; accent-color: var(--primary); 
+            cursor: pointer; margin: 0; appearance: auto; -webkit-appearance: checkbox; 
         }
 
         .btn-add {
@@ -178,20 +188,11 @@ html_content = """
         .checkbox-row span { cursor: pointer; }
         
         .custom-hint { display: none; background: #fff8e1; color: #664d03; padding: 12px; font-size: 12px; border-radius: 8px; margin-top: 10px; border: 1px solid #ffecb5; }
-        
         .info-desc { font-size: 12px; color: #666; margin-top: 20px; line-height: 1.5; border-top: 1px solid #eee; padding-top: 15px; }
-
         .auto-attach-info {
-            font-size: 12px; 
-            background: #e9f7ef; 
-            color: #1e8449; 
-            padding: 10px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-            border: 1px solid #c3e6cb;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            font-size: 12px; background: #e9f7ef; color: #1e8449; padding: 10px; 
+            border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;
+            display: flex; align-items: center; gap: 8px;
         }
 
     </style>
@@ -229,9 +230,7 @@ html_content = """
                     <strong>Inne / Wycena Indywidualna</strong>
                 </div>
             </div>
-            
             <div id="sm-hint" class="custom-hint">Zaznacz tę opcję, a na dole strony w formularzu opisz swoje potrzeby. Wycenimy to indywidualnie!</div>
-
             <div class="info-desc">
                 W cenie miesięcznego pakietu: prowadzimy Twoje social media od A do Z. W tym: wykorzystujemy profesjonalny sprzęt foto/wideo, jesteśmy w stałym kontakcie ze zleceniodawcą, przygotowujemy comiesięczne raporty z wynikami, odpisujemy na komentarze i wiadomości.
             </div>
@@ -250,16 +249,11 @@ html_content = """
                 <option value="100">Grafika Social Media</option>
                 <option value="0">Inne</option>
             </select>
-            
             <div id="gfx-hint" class="custom-hint">Wybierz tę opcję dla nietypowych zleceń i opisz je w formularzu końcowym.</div>
-
             <label style="margin-top:15px">Ilość sztuk:</label>
             <input type="number" id="gfx_qty" placeholder="np. 1" min="1">
-
             <button class="btn-add" onclick="addItem('gfx')">+ Dodaj do wyceny</button>
-            
             <div id="gfx-list" style="margin-top:15px"></div>
-
             <label class="checkbox-row" style="margin-top:20px; font-size:14px;">
                 <input type="checkbox" id="gfx_print"> 
                 <span>Zlecam również druk</span>
@@ -279,15 +273,11 @@ html_content = """
                 <option value="550">Film > 2 min</option>
                 <option value="0">Inne</option>
             </select>
-
             <div id="vid-hint" class="custom-hint">Opisz niestandardowe wideo w formularzu na dole.</div>
-
             <label style="margin-top:15px">Ilość filmów:</label>
             <input type="number" id="vid_qty" placeholder="np. 1" min="1">
-
             <button class="btn-add" onclick="addItem('vid')">+ Dodaj do wyceny</button>
             <div id="vid-list" style="margin-top:15px"></div>
-            
             <div style="font-size: 12px; color: #666; margin-top: 15px; font-style: italic;">
                 * Cena obejmuje nagranie wideo oraz profesjonalny montaż.
             </div>
@@ -317,11 +307,9 @@ html_content = """
             <div style="text-align:center; margin-bottom:15px; font-size:13px; font-style:italic; color:#555;">
                 Jesteśmy elastyczni, dopasujemy usługę pod Twoje potrzeby!
             </div>
-
             <div style="text-align:center; margin-bottom:20px; font-weight:600; line-height:1.4;">
                 Wyślij zapytanie, a odezwiemy się do Ciebie jak najszybciej SMS-em oraz mailem.
             </div>
-            
             <div class="auto-attach-info">
                 <span>✅</span>
                 <span>Twoje wybory z kalkulatora zostaną automatycznie dołączone do zgłoszenia. Nie musisz ich przepisywać!</span>
@@ -331,26 +319,21 @@ html_content = """
                 <input type="hidden" name="_subject" value="Leads: Born to Brand">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
-                
                 <input type="hidden" name="Szczegóły" id="hidden-details">
                 <input type="hidden" name="Kwota" id="hidden-total">
 
                 <div style="margin-bottom:12px">
                     <input type="text" name="Klient" placeholder="Imię / Firma" required>
                 </div>
-                
                 <div style="margin-bottom:12px">
                     <input type="tel" id="contact-phone" name="Telefon" placeholder="Telefon (tylko cyfry)" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                 </div>
-                
                 <div style="margin-bottom:12px">
                     <input type="email" id="contact-email" name="Email" placeholder="E-mail">
                 </div>
-                
                 <div style="margin-bottom:12px">
                     <textarea name="Wiadomosc" placeholder="Dodatkowe informacje..." rows="3"></textarea>
                 </div>
-
                 <button type="submit" class="btn-send">Wyślij Zapytanie</button>
             </form>
             <div style="text-align:center; margin-top:15px; font-size:14px; font-weight:600;">
@@ -366,7 +349,6 @@ html_content = """
     function selectPackage(el, price, name, details) {
         let isActive = el.classList.contains('active');
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
-        
         if (!isActive) {
             el.classList.add('active');
             document.getElementById('sm_price_val').value = price;
@@ -391,7 +373,6 @@ html_content = """
     function addItem(type) {
         let select = document.getElementById(type + '_type');
         let qtyInput = document.getElementById(type + '_qty');
-        
         let price = parseFloat(select.value);
         let name = select.selectedOptions[0].text;
         let qty = parseInt(qtyInput.value);
@@ -401,9 +382,7 @@ html_content = """
         if (name === 'Inne') qty = 1; 
 
         cart[type].push({ name, price, qty, isOther: (name === 'Inne') });
-
-        select.value = "0";
-        qtyInput.value = "";
+        select.value = "0"; qtyInput.value = "";
         renderList(type);
         if(type === 'gfx') toggleGfxHint();
         if(type === 'vid') toggleVidHint();
@@ -417,7 +396,6 @@ html_content = """
     function renderList(type) {
         let container = document.getElementById(type + '-list');
         container.innerHTML = '';
-        
         cart[type].forEach((item, idx) => {
             let div = document.createElement('div');
             div.className = 'added-item';
@@ -434,19 +412,15 @@ html_content = """
         let detailsArr = [];
         let isCustom = false;
 
-        // 1. Social Media
         let smPrice = parseFloat(document.getElementById('sm_price_val').value) || 0;
         let smDesc = document.getElementById('sm_desc').value;
         if (smPrice > 0) total += smPrice;
         if (smDesc) detailsArr.push(smDesc);
         if (smDesc.includes('Indywidualna')) isCustom = true;
 
-        // 2. Grafika
         cart.gfx.forEach(i => {
-            if (i.isOther) {
-                isCustom = true;
-                detailsArr.push('Grafika: INNE');
-            } else {
+            if (i.isOther) { isCustom = true; detailsArr.push('Grafika: INNE'); } 
+            else {
                 let cost = i.price * i.qty;
                 if (i.qty > 1) cost *= 0.9; 
                 total += cost;
@@ -454,12 +428,9 @@ html_content = """
             }
         });
 
-        // 3. Wideo
         cart.vid.forEach(i => {
-            if (i.isOther) {
-                isCustom = true;
-                detailsArr.push('Wideo: INNE');
-            } else {
+            if (i.isOther) { isCustom = true; detailsArr.push('Wideo: INNE'); } 
+            else {
                 let cost = i.price * i.qty;
                 if (i.qty > 1) cost *= 0.9; 
                 total += cost;
@@ -467,7 +438,6 @@ html_content = """
             }
         });
 
-        // 4. Dodatki
         let drone = document.getElementById('drone').checked;
         let travel = document.getElementById('travel').checked;
         let print = document.getElementById('gfx_print').checked;
@@ -487,14 +457,11 @@ html_content = """
 
         if (print) detailsArr.push('Druk: TAK (do wyceny)');
 
-        // Finalizacja
         total = Math.round(total);
         let displayTxt = total + " zł";
-        
         if (isCustom) displayTxt += " + Wycena";
         if (total === 0 && isCustom) displayTxt = "Wycena Indywidualna";
         if (print) displayTxt += " + Druk";
-
         if (total === 0 && !isCustom && !print) displayTxt = "0 zł";
 
         document.getElementById('total-display').innerText = displayTxt;
@@ -508,28 +475,20 @@ html_content = """
         }
     }
 
-    // --- NOWA LOGIKA WALIDACJI FORMULARZA ---
     document.getElementById('contactForm').addEventListener('submit', function(e) {
         var phone = document.getElementById('contact-phone').value;
         var email = document.getElementById('contact-email').value;
 
-        // 1. Sprawdź czy podano cokolwiek (Telefon LUB Email)
         if (!phone && !email) {
             e.preventDefault();
             alert('Podaj numer telefonu LUB adres e-mail, abyśmy mogli się z Tobą skontaktować.');
             return;
         }
-
-        // 2. Walidacja telefonu (jeśli wpisany)
-        if (phone) {
-            if (phone.length < 9) {
-                e.preventDefault();
-                alert('Numer telefonu jest za krótki. Wpisz co najmniej 9 cyfr.');
-                return;
-            }
+        if (phone && phone.length < 9) {
+            e.preventDefault();
+            alert('Numer telefonu jest za krótki. Wpisz co najmniej 9 cyfr.');
+            return;
         }
-
-        // 3. Walidacja e-maila (jeśli wpisany)
         if (email) {
             var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!re.test(email)) {
@@ -539,7 +498,6 @@ html_content = """
             }
         }
     });
-
 </script>
 
 </body>
