@@ -184,7 +184,6 @@ html_content = """
             display: flex; align-items: center; gap: 8px;
         }
 
-        /* Styl dla komunikatu błędu (zamiast alertu) */
         #error-msg {
             color: #d32f2f; font-weight: 600; font-size: 14px; text-align: center;
             margin-top: 10px; display: none; padding: 10px; background: #ffebee; border-radius: 8px; border: 1px solid #ffcdd2;
@@ -310,7 +309,7 @@ html_content = """
                 <span>Twoje wybory z kalkulatora zostaną automatycznie dołączone do zgłoszenia. Nie musisz ich przepisywać!</span>
             </div>
 
-            <form id="contactForm" action="https://formsubmit.co/kubafilip211@interia.pl" method="POST" target="_blank">
+            <form id="contactForm" action="https://formsubmit.co/kubafilip211@interia.pl" method="POST">
                 <input type="hidden" name="_subject" value="Leads: Born to Brand">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
@@ -474,24 +473,19 @@ html_content = """
         }
     }
 
-    // --- NOWA, BEZPIECZNA WALIDACJA DLA TELEFONÓW ---
     document.getElementById('contactForm').addEventListener('submit', function(e) {
         var email = document.getElementById('contact-email').value;
         var errorMsg = document.getElementById('error-msg');
         
-        // Ukryj błąd na starcie
         errorMsg.style.display = 'none';
         errorMsg.innerText = '';
 
-        // Proste sprawdzenie e-maila
         if (!email || !email.includes('@')) {
-            e.preventDefault(); // ZATRZYMAJ WYSYŁANIE
+            e.preventDefault();
             errorMsg.innerText = '⚠️ Proszę wpisać poprawny adres e-mail, abyśmy mogli odpowiedzieć.';
             errorMsg.style.display = 'block';
             return;
         }
-
-        // Jeśli wszystko ok - formularz się wyśle sam
     });
 </script>
 
