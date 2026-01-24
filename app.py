@@ -10,11 +10,12 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. ZAPOBIEGANIE USYPIANIU (Dodane) ---
-# Odświeża aplikację w tle co 5 minut (300 000 ms)
+# --- 2. ZAPOBIEGANIE USYPIANIU ---
+# Odświeża aplikację w tle co 5 minut
 st_autorefresh(interval=300000, key="data_refresh_key")
 
-# --- 3. CSS FIX DLA STREAMLIT ---
+# --- 3. CSS FIX DLA STREAMLIT (POPRAWIONY) ---
+# Usunąłem linijkę z "iframe", która robiła czarną dziurę na górze
 st.markdown("""
     <style>
         .block-container { padding-top: 0rem; padding-bottom: 0rem; padding-left: 0rem; padding-right: 0rem; }
@@ -23,7 +24,6 @@ st.markdown("""
         #MainMenu {visibility: hidden;}
         [data-testid="stToolbar"] {visibility: hidden;}
         .stDeployButton {display:none;}
-        iframe { width: 100%; min-height: 100vh; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -527,10 +527,9 @@ html_content = """
                 alert('Numer telefonu jest za krótki. Wpisz co najmniej 9 cyfr.');
                 return;
             }
-            // (Blokada liter jest już zrobiona przez oninput w HTML)
         }
 
-        // 3. Walidacja e-maila (jeśli wpisany) - prosty regex dla pewności
+        // 3. Walidacja e-maila (jeśli wpisany)
         if (email) {
             var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!re.test(email)) {
