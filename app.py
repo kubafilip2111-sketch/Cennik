@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from streamlit_autorefresh import st_autorefresh
 
 # --- 1. KONFIGURACJA STRONY ---
 st.set_page_config(
@@ -9,7 +10,11 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# --- 2. CSS FIX DLA STREAMLIT ---
+# --- 2. ZAPOBIEGANIE USYPIANIU (Dodane) ---
+# Odświeża aplikację w tle co 5 minut (300 000 ms)
+st_autorefresh(interval=300000, key="data_refresh_key")
+
+# --- 3. CSS FIX DLA STREAMLIT ---
 st.markdown("""
     <style>
         .block-container { padding-top: 0rem; padding-bottom: 0rem; padding-left: 0rem; padding-right: 0rem; }
@@ -22,7 +27,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. GŁÓWNY KOD HTML/JS/CSS ---
+# --- 4. GŁÓWNY KOD HTML/JS/CSS ---
 html_content = """
 <!DOCTYPE html>
 <html lang="pl">
