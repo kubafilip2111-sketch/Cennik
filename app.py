@@ -185,7 +185,6 @@ html_content = """
             display: flex; align-items: center; gap: 8px;
         }
 
-        /* Nowe style dla podziękowania */
         #success-msg {
             display: none; text-align: center; padding: 30px; background: #fff; border-radius: 16px;
             border: 2px solid #4caf50; margin-top: 20px;
@@ -214,20 +213,20 @@ html_content = """
         <summary>Prowadzenie Social Media</summary>
         <div class="content">
             <div class="presets-grid">
-                <div class="btn-preset" onclick="selectPackage(this, 400, 'Minimum', '2 Rolki, 2 Grafiki, 2 Relacje')">
-                    <strong>Minimum</strong>
+                <div class="btn-preset" onclick="selectPackage(this, 400, 'Pakiet Start', '2 Rolki, 2 Grafiki, 2 Relacje')">
+                    <strong>Pakiet Start</strong>
                     <ul><li>2x Rolki</li><li>2x Grafiki</li><li>2x Relacje</li></ul>
                 </div>
-                <div class="btn-preset" onclick="selectPackage(this, 1000, 'Niski', '4 Rolki, 4 Grafiki, 4 Relacje')">
-                    <strong>Niski</strong>
+                <div class="btn-preset" onclick="selectPackage(this, 1000, 'Pakiet Standard', '4 Rolki, 4 Grafiki, 4 Relacje')">
+                    <strong>Pakiet Standard</strong>
                     <ul><li>4x Rolki</li><li>4x Grafiki</li><li>4x Relacje</li></ul>
                 </div>
-                <div class="btn-preset" onclick="selectPackage(this, 1500, 'Polecany', '8 Rolek, 4 Grafiki, 8 Relacji')">
-                    <strong>Polecany</strong>
+                <div class="btn-preset" onclick="selectPackage(this, 1500, 'Pakiet Optymalny', '8 Rolek, 4 Grafiki, 8 Relacji')">
+                    <strong>Pakiet Optymalny</strong>
                     <ul><li>8x Rolki</li><li>4x Grafiki</li><li>8x Relacje</li></ul>
                 </div>
-                <div class="btn-preset" onclick="selectPackage(this, 2000, 'Wysoki', '10 Rolek, 8 Grafik, 10 Relacji')">
-                    <strong>Wysoki</strong>
+                <div class="btn-preset" onclick="selectPackage(this, 2000, 'Pakiet Premium', '10 Rolek, 8 Grafik, 10 Relacji')">
+                    <strong>Pakiet Premium</strong>
                     <ul><li>10x Rolki</li><li>8x Grafiki</li><li>10x Relacje</li></ul>
                 </div>
                 <div class="btn-preset full-width" onclick="selectPackage(this, 0, 'INNE', 'Wycena indywidualna')">
