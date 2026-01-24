@@ -165,6 +165,7 @@ html_content = """
             text-transform: uppercase; margin-top: 15px; box-shadow: 0 4px 15px rgba(255, 194, 0, 0.4);
         }
         .btn-send:hover { background: var(--primary-hover); }
+        .btn-send:disabled { background: #ccc; cursor: not-allowed; }
 
         .added-item { 
             display: flex; justify-content: space-between; align-items: center;
@@ -183,6 +184,15 @@ html_content = """
             border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;
             display: flex; align-items: center; gap: 8px;
         }
+
+        /* Nowe style dla podziękowania */
+        #success-msg {
+            display: none; text-align: center; padding: 30px; background: #fff; border-radius: 16px;
+            border: 2px solid #4caf50; margin-top: 20px;
+        }
+        .success-icon { font-size: 50px; display: block; margin-bottom: 10px; }
+        .success-title { font-size: 22px; font-weight: 800; color: #2e7d32; margin-bottom: 10px; }
+        .success-text { font-size: 14px; color: #555; }
 
         #error-msg {
             color: #d32f2f; font-weight: 600; font-size: 14px; text-align: center;
@@ -297,7 +307,7 @@ html_content = """
             <span class="price-val" id="total-display">0 zł</span>
         </div>
 
-        <div class="form-box">
+        <div id="form-container" class="form-box">
             <div style="text-align:center; margin-bottom:15px; font-size:13px; font-style:italic; color:#555;">
                 Jesteśmy elastyczni, dopasujemy usługę pod Twoje potrzeby!
             </div>
@@ -309,7 +319,7 @@ html_content = """
                 <span>Twoje wybory z kalkulatora zostaną automatycznie dołączone do zgłoszenia. Nie musisz ich przepisywać!</span>
             </div>
 
-            <form id="contactForm" action="https://formsubmit.co/kubafilip211@interia.pl" method="POST">
+            <form id="contactForm">
                 <input type="hidden" name="_subject" value="Leads: Born to Brand">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
@@ -332,11 +342,17 @@ html_content = """
                 
                 <div id="error-msg"></div>
 
-                <button type="submit" class="btn-send">Wyślij Zapytanie</button>
+                <button type="submit" id="submit-btn" class="btn-send">Wyślij Zapytanie</button>
             </form>
             <div style="text-align:center; margin-top:15px; font-size:14px; font-weight:600;">
                 lub zadzwoń: <a href="tel:+48515478736" style="color:var(--primary-hover); text-decoration:none;">515 478 736</a>
             </div>
+        </div>
+
+        <div id="success-msg">
+            <span class="success-icon">🎉</span>
+            <div class="success-title">Wysłano pomyślnie!</div>
+            <div class="success-text">Dziękujemy za zapytanie. Odezwiemy się najszybciej jak to możliwe!</div>
         </div>
     </div>
 </div>
@@ -344,6 +360,7 @@ html_content = """
 <script>
     let cart = { gfx: [], vid: [] };
 
+    // --- FUNKCJE KALKULATORA ---
     function selectPackage(el, price, name, details) {
         let isActive = el.classList.contains('active');
         document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
@@ -473,20 +490,51 @@ html_content = """
         }
     }
 
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
+    // --- NOWY MECHANIZM WYSYŁANIA (AJAX) ---
+    const form = document.getElementById('contactForm');
+    
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // ZATRZYMUJE PRZEŁADOWANIE STRONY
+
         var email = document.getElementById('contact-email').value;
         var errorMsg = document.getElementById('error-msg');
-        
-        errorMsg.style.display = 'none';
-        errorMsg.innerText = '';
+        var submitBtn = document.getElementById('submit-btn');
 
+        // Walidacja
         if (!email || !email.includes('@')) {
-            e.preventDefault();
-            errorMsg.innerText = '⚠️ Proszę wpisać poprawny adres e-mail, abyśmy mogli odpowiedzieć.';
+            errorMsg.innerText = '⚠️ Proszę wpisać poprawny adres e-mail.';
             errorMsg.style.display = 'block';
             return;
         }
+
+        submitBtn.innerText = "Wysyłanie...";
+        submitBtn.disabled = true;
+
+        // Pobierz dane z formularza
+        const formData = new FormData(form);
+
+        // Wyślij w tle (fetch)
+        fetch("https://formsubmit.co/ajax/kubafilip211@interia.pl", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Sukces: Ukryj formularz, pokaż podziękowanie
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('success-msg').style.display = 'block';
+            // Przewiń do komunikatu
+            document.getElementById('success-msg').scrollIntoView({ behavior: 'smooth' });
+        })
+        .catch(error => {
+            console.log(error);
+            submitBtn.innerText = "Wyślij Zapytanie";
+            submitBtn.disabled = false;
+            errorMsg.innerText = 'Błąd wysyłania. Spróbuj ponownie lub zadzwoń.';
+            errorMsg.style.display = 'block';
+        });
     });
+
 </script>
 
 </body>
