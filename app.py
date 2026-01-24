@@ -246,7 +246,7 @@ html_content = """
                 <option value="150">Baner</option>
                 <option value="150">Ulotka</option>
                 <option value="100">Wizytówka</option>
-                <option value="100">Grafika Social Media</option>
+                <option value="75">Grafika Social Media</option>
                 <option value="0">Inne</option>
             </select>
             <div id="gfx-hint" class="custom-hint">Wybierz tę opcję dla nietypowych zleceń i opisz je w formularzu końcowym.</div>
