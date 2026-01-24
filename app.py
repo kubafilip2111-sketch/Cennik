@@ -13,29 +13,16 @@ st.set_page_config(
 # --- 2. ZAPOBIEGANIE USYPIANIU ---
 st_autorefresh(interval=300000, key="data_refresh_key")
 
-# --- 3. WYMUSZENIE BIAŁEGO TŁA I USUNIĘCIE PASKÓW (Poprawka) ---
+# --- 3. CSS (Białe tło + Fixy) ---
 st.markdown("""
     <style>
-        /* Wymusza białe tło na całej stronie Streamlit */
-        .stApp {
-            background-color: #ffffff;
-        }
-        
-        /* Ukrywa domyślny górny pasek Streamlit (ten z burgerem menu) */
-        header[data-testid="stHeader"] {
-            display: none;
-        }
-
-        /* Usuwa marginesy, żeby aplikacja była na cały ekran */
+        .stApp { background-color: #ffffff; }
+        header[data-testid="stHeader"] { display: none; }
         .block-container {
-            padding-top: 0rem;
-            padding-bottom: 0rem;
-            padding-left: 0rem;
-            padding-right: 0rem;
+            padding-top: 0rem; padding-bottom: 0rem;
+            padding-left: 0rem; padding-right: 0rem;
             max-width: 100%;
         }
-        
-        /* Ukrywa stopkę i inne elementy */
         footer {visibility: hidden;}
         .stDeployButton {display:none;}
     </style>
@@ -62,7 +49,6 @@ html_content = """
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
-        /* Tło body też na białe, dla pewności */
         body { 
             font-family: 'Poppins', sans-serif; 
             background: #ffffff; 
@@ -131,6 +117,9 @@ html_content = """
             outline: none;
         }
         
+        optgroup { font-weight: 700; color: #888; background: #fff; }
+        option { color: #000; padding: 5px; }
+
         input:focus, select:focus, textarea:focus { 
             border-color: var(--primary) !important; 
             box-shadow: 0 0 0 3px rgba(255, 194, 0, 0.25) !important; 
@@ -193,6 +182,12 @@ html_content = """
             font-size: 12px; background: #e9f7ef; color: #1e8449; padding: 10px; 
             border-radius: 8px; margin-bottom: 20px; border: 1px solid #c3e6cb;
             display: flex; align-items: center; gap: 8px;
+        }
+
+        /* Styl dla komunikatu błędu (zamiast alertu) */
+        #error-msg {
+            color: #d32f2f; font-weight: 600; font-size: 14px; text-align: center;
+            margin-top: 10px; display: none; padding: 10px; background: #ffebee; border-radius: 8px; border: 1px solid #ffcdd2;
         }
 
     </style>
@@ -319,6 +314,7 @@ html_content = """
                 <input type="hidden" name="_subject" value="Leads: Born to Brand">
                 <input type="hidden" name="_captcha" value="false">
                 <input type="hidden" name="_template" value="table">
+                
                 <input type="hidden" name="Szczegóły" id="hidden-details">
                 <input type="hidden" name="Kwota" id="hidden-total">
 
@@ -326,14 +322,17 @@ html_content = """
                     <input type="text" name="Klient" placeholder="Imię / Firma" required>
                 </div>
                 <div style="margin-bottom:12px">
-                    <input type="tel" id="contact-phone" name="Telefon" placeholder="Telefon (tylko cyfry)" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                    <input type="tel" id="contact-phone" name="Telefon" placeholder="Telefon (opcjonalnie)" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                 </div>
                 <div style="margin-bottom:12px">
-                    <input type="email" id="contact-email" name="Email" placeholder="E-mail">
+                    <input type="email" id="contact-email" name="email" placeholder="E-mail (wymagany)" required>
                 </div>
                 <div style="margin-bottom:12px">
                     <textarea name="Wiadomosc" placeholder="Dodatkowe informacje..." rows="3"></textarea>
                 </div>
+                
+                <div id="error-msg"></div>
+
                 <button type="submit" class="btn-send">Wyślij Zapytanie</button>
             </form>
             <div style="text-align:center; margin-top:15px; font-size:14px; font-weight:600;">
@@ -475,28 +474,24 @@ html_content = """
         }
     }
 
+    // --- NOWA, BEZPIECZNA WALIDACJA DLA TELEFONÓW ---
     document.getElementById('contactForm').addEventListener('submit', function(e) {
-        var phone = document.getElementById('contact-phone').value;
         var email = document.getElementById('contact-email').value;
+        var errorMsg = document.getElementById('error-msg');
+        
+        // Ukryj błąd na starcie
+        errorMsg.style.display = 'none';
+        errorMsg.innerText = '';
 
-        if (!phone && !email) {
-            e.preventDefault();
-            alert('Podaj numer telefonu LUB adres e-mail, abyśmy mogli się z Tobą skontaktować.');
+        // Proste sprawdzenie e-maila
+        if (!email || !email.includes('@')) {
+            e.preventDefault(); // ZATRZYMAJ WYSYŁANIE
+            errorMsg.innerText = '⚠️ Proszę wpisać poprawny adres e-mail, abyśmy mogli odpowiedzieć.';
+            errorMsg.style.display = 'block';
             return;
         }
-        if (phone && phone.length < 9) {
-            e.preventDefault();
-            alert('Numer telefonu jest za krótki. Wpisz co najmniej 9 cyfr.');
-            return;
-        }
-        if (email) {
-            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!re.test(email)) {
-                e.preventDefault();
-                alert('Podany adres e-mail wygląda na nieprawidłowy.');
-                return;
-            }
-        }
+
+        // Jeśli wszystko ok - formularz się wyśle sam
     });
 </script>
 
